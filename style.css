@@ -8,7 +8,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    overflow: auto;
+    overflow-y: auto;
 }
 
 .container {
@@ -16,8 +16,9 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
+    max-width: 800px;
     width: 100%;
+    position: relative;
 }
 
 /* 제목 스타일 */
@@ -27,7 +28,28 @@ h2 {
     margin-bottom: 20px;
 }
 
-/* 입력 필드 스타일 */
+/* 월소득액과 직접입력/도시일용임금 간의 간격만 조정 */
+#incomeSection {
+    margin-bottom: 0;
+}
+
+label[for="incomeDirectRadio"],
+label[for="incomeFixedRadio"] {
+    margin-top: -5px;
+    margin-bottom: -5px;
+}
+
+input#incomeInputDirect {
+    margin-top: 0;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    width: calc(60% - 10px);
+    box-sizing: border-box;
+}
+
+/* 기존 스타일 유지 */
 label {
     font-weight: bold;
     display: block;
@@ -37,8 +59,9 @@ label {
 
 input[type="date"],
 input[type="number"],
+input[type="text"],
 select {
-    width: calc(100% - 20px);
+    width: calc(60% - 10px);
     padding: 8px;
     margin-bottom: 15px;
     border: 1px solid #ccc;
@@ -48,6 +71,11 @@ select {
 
 input[type="radio"] {
     margin-right: 5px;
+}
+
+/* 줄 간격 조정 */
+label[for="directPayment"] {
+    margin-top: 20px;
 }
 
 /* 버튼 스타일 */
@@ -85,6 +113,12 @@ button:hover {
     margin: 8px 0;
     font-size: 16px;
     color: #444;
+}
+
+/* 총 예상 합의금액의 글씨 크기 조정 */
+.result p strong {
+    font-size: 24px;
+    color: #333;
 }
 
 /* 저작권 및 주의사항 스타일 */

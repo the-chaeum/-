@@ -1,35 +1,58 @@
 function selectIncomeOption(option) {
     const incomeDirectInput = document.getElementById('incomeInputDirect');
-    const incomeFixedInput = document.getElementById('incomeInputFixed');
 
     if (option === 'direct') {
-        incomeDirectInput.disabled = false;
-        incomeFixedInput.disabled = true;
+        incomeDirectInput.disabled = false; // 직접입력을 선택하면 입력란 활성화
     } else if (option === 'fixed') {
-        incomeDirectInput.disabled = true;
-        incomeDirectInput.value = '';  // 직접 입력 값을 초기화
-        incomeFixedInput.disabled = false;
+        incomeDirectInput.disabled = true; // 도시일용임금을 선택하면 입력란 비활성화
+        incomeDirectInput.value = ''; // 값 초기화
     }
 }
+
+function formatNumber(value) {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function removeCommas(value) {
+    return value.replace(/,/g, '');
+}
+
+// 숫자 입력 시 자동으로 쉼표 단위 구분 적용
+document.getElementById('insuranceCost').addEventListener('input', function (e) {
+    const value = removeCommas(e.target.value);
+    e.target.value = formatNumber(value);
+});
+
+document.getElementById('incomeInputDirect').addEventListener('input', function (e) {
+    const value = removeCommas(e.target.value);
+    e.target.value = formatNumber(value);
+    document.getElementById('incomeInputDirect').disabled = false; // 입력 시 활성화 유지
+});
+
+document.getElementById('directPayment').addEventListener('input', function (e) {
+    const value = removeCommas(e.target.value);
+    e.target.value = formatNumber(value);
+});
 
 function calculate() {
     const birthdateInput = document.getElementById('birthdate').value;
     const hospitalDays = parseInt(document.getElementById('hospitalDays').value);
     const clinicDays = parseInt(document.getElementById('clinicDays').value);
-    const decisionFault = parseInt(document.getElementById('decisionFault').value);
+    const userFault = parseInt(document.getElementById('userFault').value);
     const injuryGrade = parseInt(document.getElementById('injuryGrade').value);
-    const insuranceCost = parseInt(document.getElementById('insuranceCost').value); // 보험사 부담 치료비 항목 값
-    const directPayment = parseInt(document.getElementById('directPayment').value); // 직불치료비 항목 값
-    
-    // 두 입력칸 중 하나를 선택해서 사용
-    const directIncome = parseInt(document.getElementById('incomeInputDirect').value);
-    const fixedIncome = parseInt(document.getElementById('incomeInputFixed').value);
 
+    const insuranceCost = parseInt(removeCommas(document.getElementById('insuranceCost').value)) || 0;
+    const directPayment = parseInt(removeCommas(document.getElementById('directPayment').value)) || 0;
+
+    const directIncome = parseInt(removeCommas(document.getElementById('incomeInputDirect').value)) || 0;
     let monthlyIncome;
-    if (!isNaN(directIncome) && directIncome > 0 && !document.getElementById('incomeInputDirect').disabled) {
-        monthlyIncome = directIncome;
+
+    if (!document.getElementById('incomeInputDirect').disabled) {
+        if (!isNaN(directIncome) && directIncome > 0) {
+            monthlyIncome = directIncome;
+        }
     } else {
-        monthlyIncome = fixedIncome;
+        monthlyIncome = 3144413; // 도시일용임금 값
     }
 
     if (!birthdateInput) {
@@ -44,26 +67,22 @@ function calculate() {
         age--;
     }
 
-    // 위자료 계산 (상해급수에 따른 값)
     let 위자료 = 0;
-    if (injuryGrade === 9) 위자료 = 250000;
+    if (injuryGrade === 8) 위자료 = 300000;
+    else if (injuryGrade === 9) 위자료 = 250000;
     else if (injuryGrade === 10) 위자료 = 200000;
     else if (injuryGrade === 11) 위자료 = 200000;
     else if (injuryGrade === 12) 위자료 = 150000;
     else if (injuryGrade === 13) 위자료 = 150000;
     else if (injuryGrade === 14) 위자료 = 150000;
 
-    // 휴업손해 계산 (직접입력 선택 시와 도시일용임금 선택 시 구분)
     let 휴업손해 = 0;
     if (!document.getElementById('incomeInputDirect').disabled) {
-        // 직접입력 선택 시
         휴업손해 = Math.floor((monthlyIncome / 30) * hospitalDays * 0.85);
     } else {
-        // 도시일용임금 선택 시
         휴업손해 = Math.floor((3144413 / 30) * hospitalDays * 0.85);
     }
 
-    // 향후치료비 계산 (나이에 따른 계산)
     let 향후치료비 = 0;
     if (age >= 0 && age <= 9) {
         향후치료비 = 91653 * 14;
@@ -83,35 +102,18 @@ function calculate() {
         향후치료비 = 200109 * 14;
     }
 
-    // 기타 손해배상금 계산 (8,000원 * (통원일수 + 14))
     const 기타손해배상금 = 8000 * (clinicDays + 14);
-
-    // 직불치료비는 입력된 값 그대로 사용
     const 계산된직불치료비 = directPayment;
 
-    // 과실상계 계산 (위자료 + 휴업손해 + 기타 손해배상금 + 향후치료비 + 직불치료비) * (1 - 결정과실 / 100)
-    const 과실상계 = (위자료 + 휴업손해 + 기타손해배상금 + 향후치료비 + 계산된직불치료비) * (1 - decisionFault / 100);
+    const 과실상계 = (위자료 + 휴업손해 + 기타손해배상금 + 향후치료비 + 계산된직불치료비) * (1 - userFault / 100);
+    const 치료비상계 = -Math.abs(insuranceCost * (userFault / 100));
 
-    // 치료비상계 계산 (보험사 부담 치료비 * (결정과실 / 100)) - 앞에 "-" 기호 추가
-    const 치료비상계 = -Math.abs(insuranceCost * (decisionFault / 100));
-
-    // 총 예상 합의금액 계산 (과실상계된 금액 + 치료비상계된 금액)
     const 총예상합의금액 = 과실상계 + 치료비상계;
 
-    // 총 예상 합의금액의 20% 범위 계산
     const 최소금액 = Math.floor(총예상합의금액 * 0.8);
     const 최대금액 = Math.floor(총예상합의금액);
 
-    // 결과 출력
     document.getElementById('result').innerHTML = `
-        <h3>계산 결과</h3>
-        <p>위자료: ${위자료.toLocaleString()} 원</p>
-        <p>휴업손해: ${휴업손해.toLocaleString()} 원</p>
-        <p>기타 손해배상금: ${기타손해배상금.toLocaleString()} 원</p>
-        <p>향후치료비: ${향후치료비.toLocaleString()} 원</p>
-        <p>직불치료비: ${계산된직불치료비.toLocaleString()} 원</p>
-        <p>과실상계: ${과실상계.toLocaleString()} 원</p>
-        <p>치료비상계: ${치료비상계.toLocaleString()} 원</p>
         <p><strong>총 예상 합의금액: ${최소금액.toLocaleString()} 원 ~ ${최대금액.toLocaleString()} 원</strong></p>
         <br>
         <p>※ 단, 보험사별 / 보험사 담당자별 사정에 따라 금액은 달라질 수 있습니다.</p>
