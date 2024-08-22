@@ -110,8 +110,9 @@ function calculate() {
 
     const 총예상합의금액 = 과실상계 + 치료비상계;
 
-    const 최소금액 = Math.floor(총예상합의금액 * 0.8);
-    const 최대금액 = Math.floor(총예상합의금액);
+    // 만원 단위 이하 절사
+    const 최소금액 = Math.floor(Math.floor(총예상합의금액 * 0.8) / 10000) * 10000;
+    const 최대금액 = Math.floor(Math.floor(총예상합의금액) / 10000) * 10000;
 
     document.getElementById('result').innerHTML = `
         <p><strong>총 예상 합의금액: ${최소금액.toLocaleString()} 원 ~ ${최대금액.toLocaleString()} 원</strong></p>
