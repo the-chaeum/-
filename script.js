@@ -1,11 +1,14 @@
+let totalAmount = 0;
+let detailedResultHTML = '';
+
 function selectIncomeOption(option) {
     const incomeDirectInput = document.getElementById('incomeInputDirect');
 
     if (option === 'direct') {
-        incomeDirectInput.disabled = false; // 직접입력을 선택하면 입력란 활성화
+        incomeDirectInput.disabled = false;
     } else if (option === 'fixed') {
-        incomeDirectInput.disabled = true; // 도시일용임금을 선택하면 입력란 비활성화
-        incomeDirectInput.value = ''; // 값 초기화
+        incomeDirectInput.disabled = true;
+        incomeDirectInput.value = '';
     }
 }
 
@@ -16,23 +19,6 @@ function formatNumber(value) {
 function removeCommas(value) {
     return value.replace(/,/g, '');
 }
-
-// 숫자 입력 시 자동으로 쉼표 단위 구분 적용
-document.getElementById('insuranceCost').addEventListener('input', function (e) {
-    const value = removeCommas(e.target.value);
-    e.target.value = formatNumber(value);
-});
-
-document.getElementById('incomeInputDirect').addEventListener('input', function (e) {
-    const value = removeCommas(e.target.value);
-    e.target.value = formatNumber(value);
-    document.getElementById('incomeInputDirect').disabled = false; // 입력 시 활성화 유지
-});
-
-document.getElementById('directPayment').addEventListener('input', function (e) {
-    const value = removeCommas(e.target.value);
-    e.target.value = formatNumber(value);
-});
 
 function calculate() {
     const birthdateInput = document.getElementById('birthdate').value;
@@ -52,7 +38,7 @@ function calculate() {
             monthlyIncome = directIncome;
         }
     } else {
-        monthlyIncome = 3144413; // 도시일용임금 값
+        monthlyIncome = 3144413;
     }
 
     if (!birthdateInput) {
@@ -83,41 +69,61 @@ function calculate() {
         휴업손해 = Math.floor((3144413 / 30) * hospitalDays * 0.85);
     }
 
+    const treatmentDays = parseInt(document.getElementById('treatmentDays').value);
     let 향후치료비 = 0;
     if (age >= 0 && age <= 9) {
-        향후치료비 = 91653 * 14;
+        향후치료비 = 91653 * treatmentDays;
     } else if (age >= 10 && age <= 19) {
-        향후치료비 = 152250 * 14;
+        향후치료비 = 152250 * treatmentDays;
     } else if (age >= 20 && age <= 29) {
-        향후치료비 = 143106 * 14;
+        향후치료비 = 143106 * treatmentDays;
     } else if (age >= 30 && age <= 39) {
-        향후치료비 = 116760 * 14;
+        향후치료비 = 116760 * treatmentDays;
     } else if (age >= 40 && age <= 49) {
-        향후치료비 = 112536 * 14;
+        향후치료비 = 112536 * treatmentDays;
     } else if (age >= 50 && age <= 59) {
-        향후치료비 = 118382 * 14;
+        향후치료비 = 118382 * treatmentDays;
     } else if (age >= 60 && age <= 69) {
-        향후치료비 = 132372 * 14;
+        향후치료비 = 132372 * treatmentDays;
     } else if (age >= 70) {
-        향후치료비 = 200109 * 14;
+        향후치료비 = 200109 * treatmentDays;
     }
 
-    const 기타손해배상금 = 8000 * (clinicDays + 14);
+    const 기타손해배상금 = 8000 * clinicDays;
     const 계산된직불치료비 = directPayment;
 
     const 과실상계 = (위자료 + 휴업손해 + 기타손해배상금 + 향후치료비 + 계산된직불치료비) * (1 - userFault / 100);
     const 치료비상계 = -Math.abs(insuranceCost * (userFault / 100));
 
-    const 총예상합의금액 = 과실상계 + 치료비상계;
+    totalAmount = Math.floor(과실상계 + 치료비상계);
 
-    // 만원 단위 이하 절사
-    const 최소금액 = Math.floor(Math.floor(총예상합의금액 * 0.8) / 10000) * 10000;
-    const 최대금액 = Math.floor(Math.floor(총예상합의금액) / 10000) * 10000;
+    const 최소금액 = Math.floor(totalAmount * 0.8);
+    const 최대금액 = Math.floor(totalAmount);
 
-    document.getElementById('result').innerHTML = `
+    detailedResultHTML = `
         <p><strong>총 예상 합의금액: ${최소금액.toLocaleString()} 원 ~ ${최대금액.toLocaleString()} 원</strong></p>
+        <br>
+        <p>위자료: ${formatNumber(위자료)} 원</p>
+        <p>휴업손해: ${formatNumber(휴업손해)} 원</p>
+        <p>기타 손해배상금: ${formatNumber(기타손해배상금)} 원</p>
+        <p>향후치료비: ${formatNumber(향후치료비)} 원</p>
+        <p>직불치료비: ${formatNumber(계산된직불치료비)} 원</p>
+        <p>과실상계: ${formatNumber(Math.floor(과실상계))} 원</p>
+        <p>치료비상계: ${formatNumber(Math.floor(치료비상계))} 원</p>
         <br>
         <p>※ 단, 보험사별 / 보험사 담당자별 사정에 따라 금액은 달라질 수 있습니다.</p>
         <p>이 프로그램의 제작자 및 저작권은 더채움 손해사정 행정사사무소에 있습니다.</p>
     `;
+
+    document.getElementById('result').innerHTML = detailedResultHTML;
+}
+
+function showTotalAmount() {
+    document.getElementById('result').innerHTML = `
+        <p><strong>총 예상 합의금액: ${totalAmount.toLocaleString()} 원</strong></p>
+    `;
+}
+
+function showDetailedAmounts() {
+    document.getElementById('result').innerHTML = detailedResultHTML;
 }

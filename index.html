@@ -9,6 +9,7 @@
 <body>
     <div class="container">
         <h2>교통사고 경상환자 예상 합의금 계산 프로그램</h2>
+
         <div>
             <label for="birthdate">1. 생년월일:</label>
             <input type="date" id="birthdate"><br>
@@ -66,24 +67,39 @@
             </select><br>
 
             <label for="insuranceCost">8. 보험사 부담 치료비:</label>
-            <input type="text" id="insuranceCost" placeholder="보험회사가 부담한 치료비를 직접 입력하세요. 모르면 생략 가능"> <span>원</span><br>
+            <input type="text" id="insuranceCost" placeholder="보험회사가 부담한 치료비를 직접 입력하세요. 모르면 생략 가능"><span> 원</span><br>
 
-            <div id="incomeSection">
-                <label>9. 월소득액:</label><br>
-                <input type="radio" id="incomeDirectRadio" name="incomeOption" onclick="selectIncomeOption('direct')"> 직접입력(세금공제 후 금액)
-                <input type="text" id="incomeInputDirect" placeholder="직접 월소득액을 입력하세요. 모르면 아래 도시일용임금 선택" disabled>
-                <span>원</span><br>
+            <label>9. 월소득액:</label>
+            <div class="input-row">
+                <input type="radio" id="incomeDirectRadio" name="incomeOption" onclick="selectIncomeOption('direct')">
+                <label for="incomeDirectRadio">직접입력(세금공제 후 금액)</label>
+                <input type="text" id="incomeInputDirect" placeholder="직접 월소득액을 입력하세요" disabled>
+            </div>
 
-                <input type="radio" id="incomeFixedRadio" name="incomeOption" onclick="selectIncomeOption('fixed')"> 도시일용임금(소득이 없거나 모르면 선택하세요)<br>
+            <div class="input-row">
+                <input type="radio" id="incomeFixedRadio" name="incomeOption" onclick="selectIncomeOption('fixed')">
+                <label for="incomeFixedRadio">도시일용임금(소득이 없거나 모르면 선택하세요)</label>
             </div>
 
             <label for="directPayment">10. 직불치료비:</label>
-            <input type="text" id="directPayment" placeholder="본인이 직접 지불한 치료비를 입력하세요. 모르면 생략 가능"> <span>원</span><br>
+            <input type="text" id="directPayment" placeholder="본인이 직접 지불한 치료비 입력"><span> 원</span><br>
+
+            <label for="treatmentDays">11. 향후치료기간:</label>
+            <select id="treatmentDays">
+                <option value="7">7일</option>
+                <option value="14" selected>14일</option>
+                <option value="21">21일</option>
+            </select><br>
 
             <button onclick="calculate()">예상 합의금 계산하기</button>
         </div>
 
         <div class="result" id="result"></div>
+
+        <div class="button-container">
+            <button onclick="showTotalAmount()">총 금액 확인하기</button>
+            <button onclick="showDetailedAmounts()">항목별 금액 확인하기</button>
+        </div>
     </div>
 
     <script src="script.js"></script>
