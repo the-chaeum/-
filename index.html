@@ -10,7 +10,7 @@
         h2 { text-align: center; font-size: 20px; margin-bottom: 20px; color: #333; }
         label { display: block; font-size: 14px; margin: 10px 0; font-weight: bold; }
         
-        /* 입력창 레이아웃 통일 (1번 요청 반영) */
+        /* 입력창 레이아웃 통일 (레이아웃 정렬 수정) */
         input[type="date"], input[type="number"], input[type="text"], input[type="email"], input[type="tel"], select { 
             width: 100%; 
             padding: 12px; 
@@ -21,22 +21,25 @@
             font-size: 14px;
         }
         
+        /* 골절 필터 스타일 */
         .vip-filter { background-color: #fff3f3; border: 2px solid #ff4d4d; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
         .vip-filter label { color: #d9534f; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; margin: 0;}
-        .vip-filter input[type="checkbox"] { transform: scale(1.5); width: auto; }
+        .vip-filter input[type="checkbox"] { transform: scale(1.5); width: auto; margin: 0; }
 
+        /* 버튼 및 결과 영역 */
         button { width: 100%; padding: 15px; background-color: #007bff; color: white; border: none; cursor: pointer; font-size: 16px; font-weight: bold; border-radius: 5px; margin-top: 10px; }
+        button:hover { background-color: #0056b3; }
         .result { margin-top: 20px; padding: 20px; background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; line-height: 1.8; }
         .hidden { display: none !important; }
 
-        /* 모달 팝업 */
+        /* 모달 팝업 디자인 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: #fff; padding: 30px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; }
         .submit-btn { background-color: #ffe812; color: #3c1e1e; border: none; padding: 15px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; }
         
-        /* 중상해 안내 화면 (5번 요청 반영) */
-        #premiumCta { background-color: #fdf2f2; border: 1px solid #ff4d4d; padding: 20px; border-radius: 10px; text-align: center; margin-top: 20px; }
-        .call-btn { background-color: #d9534f; color: white; border: none; padding: 15px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-bottom: 10px; }
+        /* 중상해(골절) 안내 화면 */
+        #premiumCta { background-color: #fdf2f2; border: 1px solid #ff4d4d; padding: 25px; border-radius: 10px; text-align: center; margin-top: 20px; }
+        .call-btn { background-color: #d9534f; color: white; border: none; padding: 15px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-bottom: 12px; }
         .back-btn { background-color: #666; color: white; border: none; padding: 10px; width: 100%; font-size: 14px; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
@@ -53,7 +56,7 @@
 
         <div id="premiumCta" class="hidden">
             <h3 style="color:#d9534f; margin-top:0;">⚠️ 정밀 보상 평가 대상입니다.</h3>
-            <p style="font-size:14px; line-height: 1.6;">
+            <p style="font-size:14px; line-height: 1.6; text-align: left; background: white; padding: 15px; border-radius: 5px; border: 1px dashed #ff4d4d;">
                 해당 사고는 단순 경상환자 평가방식이 아니며, <br>
                 <b>후유장해 등 기타 사정에 따라 금액이 크게 달라질 수 있으므로</b> <br>
                 대표 손해사정사와 전화상담이 필요합니다.
@@ -114,20 +117,25 @@
     <div id="leadModal" class="modal-overlay hidden">
         <div class="modal-content">
             <h3 style="margin-top:0;">상세 리포트 발송 📧</h3>
-            <p style="font-size:14px; color:#666;">입력하신 이메일로 <b>상세 산출 내역을 즉시 발송해 드립니다.</b></p>
+            <p style="font-size:14px; color:#666; margin-bottom: 20px;">입력하신 이메일로 <b>상세 산출 내역을 즉시 발송해 드립니다.</b></p>
+            
             <input type="text" id="userName" placeholder="이름">
             <input type="tel" id="userPhone" placeholder="연락처 (01012345678)">
             <input type="email" id="userEmail" placeholder="리포트 받을 이메일 주소">
-            <div style="font-size:12px; text-align:left; background:#f9f9f9; padding:10px; border-radius:5px; margin:10px 0;">
-                <input type="checkbox" id="privacyConsent"> 개인정보 수집 및 이용 동의 [필수]
+            
+            <div style="font-size:12px; text-align:left; background:#f9f9f9; padding:12px; border-radius:5px; margin:15px 0;">
+                <label style="display: flex; align-items: center; gap: 8px; margin: 0; cursor: pointer;">
+                    <input type="checkbox" id="privacyConsent" style="width: auto; margin: 0;"> 개인정보 수집 및 이용 동의 [필수]
+                </label>
             </div>
+            
             <button class="submit-btn" onclick="submitLead()">상세 리포트 무료로 받기</button>
-            <p style="font-size:12px; color:#999; cursor:pointer; margin-top:10px;" onclick="document.getElementById('leadModal').classList.add('hidden')">닫기</p>
+            <p style="font-size:12px; color:#999; cursor:pointer; text-decoration:underline; margin-top:15px;" onclick="document.getElementById('leadModal').classList.add('hidden')">닫기</p>
         </div>
     </div>
 
     <script>
-        // 골절 체크박스 이벤트
+        // 골절 체크 시 화면 전환 로직
         document.getElementById('vipCheck').addEventListener('change', function() {
             if(this.checked) {
                 document.getElementById('mainForm').classList.add('hidden');
@@ -139,21 +147,25 @@
             }
         });
 
-        // 이전 화면으로 돌아가기 (5번 요청)
+        // 이전 화면 돌아가기
         function goBack() {
             document.getElementById('vipCheck').checked = false;
             document.getElementById('mainForm').classList.remove('hidden');
             document.getElementById('premiumCta').classList.add('hidden');
         }
 
-        let detailedResultHTML = '';
+        // 유틸리티 함수
         function selectIncomeOption(o){ document.getElementById('incomeInputDirect').disabled=(o==='fixed'); }
         function formatNumber(v){ return v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
         function removeCommas(v){ return v.toString().replace(/,/g, ''); }
 
+        let detailedResultHTML = '';
+
+        // 계산 로직 (항목별 줄바꿈 적용)
         function calculate() {
             const birth = document.getElementById('birthdate').value;
             if(!birth){ alert("생년월일을 입력하세요."); return false; }
+            
             const hDays = parseInt(document.getElementById('hospitalDays').value)||0;
             const cDays = parseInt(document.getElementById('clinicDays').value)||0;
             const fault = parseInt(document.getElementById('userFault').value)||0;
@@ -172,7 +184,14 @@
             let 치료비상계 = -Math.abs(insCost*(fault/100));
             let total = Math.floor(과실상계+치료비상계);
 
-            detailedResultHTML = `총 예상 합의금액: ${Math.floor(total*0.8).toLocaleString()}원 ~ ${total.toLocaleString()}원\n\n위자료: ${formatNumber(위자료)}원 / 휴업손해: ${formatNumber(휴업손해)}원\n향후치료비: ${formatNumber(향후치료비)}원 / 기타손해: ${formatNumber(기타손해)}원\n과실상계: ${formatNumber(Math.floor(과실상계))}원 / 치료비상계: ${formatNumber(Math.floor(치료비상계))}원`;
+            // 🌟 항목별 줄바꿈(\n) 적용된 결과 텍스트
+            detailedResultHTML = `총 예상 합의금액: ${Math.floor(total*0.8).toLocaleString()}원 ~ ${total.toLocaleString()}원\n` +
+            `위자료: ${formatNumber(위자료)}원\n` +
+            `휴업손해: ${formatNumber(휴업손해)}원\n` +
+            `향후치료비: ${formatNumber(향후치료비)}원\n` +
+            `기타손해: ${formatNumber(기타손해)}원\n` +
+            `과실상계: ${formatNumber(Math.floor(과실상계))}원\n` +
+            `치료비상계: ${formatNumber(Math.floor(치료비상계))}원`;
             
             document.getElementById('result').innerText = detailedResultHTML;
             return true;
@@ -182,24 +201,45 @@
             if(calculate()) document.getElementById('leadModal').classList.remove('hidden');
         }
 
+        // 구글 시트 및 이메일 발송 요청
         function submitLead() {
             const name = document.getElementById('userName').value;
             const phone = document.getElementById('userPhone').value;
             const email = document.getElementById('userEmail').value;
-            if(!name || !phone || !email || !document.getElementById('privacyConsent').checked){ alert('모든 항목을 입력하고 동의해주세요.'); return; }
+            const privacyChecked = document.getElementById('privacyConsent').checked;
+
+            if(!name || !phone || !email || !privacyChecked){ 
+                alert('모든 항목을 입력하고 동의 체크를 해주세요.'); 
+                return; 
+            }
 
             const scriptURL = "https://script.google.com/macros/s/AKfycbyJcaVYjXrhQdgZqI6uRAJVcPQ-a41IVza6f-nJvFhm20dNm7okqn8KkJ7YKgiNL85k/exec";
             const resultText = document.getElementById('result').innerText;
 
+            // 투명 iframe을 이용한 데이터 전송 (에러 방지용)
             let iframe = document.createElement('iframe');
-            iframe.name = 'hidden_iframe'; iframe.style.display = 'none'; document.body.appendChild(iframe);
-            const form = document.createElement('form');
-            form.method = 'POST'; form.action = scriptURL; form.target = 'hidden_iframe';
-            const data = { 'name': name, 'phone': phone, 'email': email, 'result': resultText };
-            for(let k in data){ let i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=data[k]; form.appendChild(i); }
-            document.body.appendChild(form); form.submit();
+            iframe.name = 'hidden_iframe'; 
+            iframe.style.display = 'none'; 
+            document.body.appendChild(iframe);
 
-            // 3번 요청: 알림창 띄우고 확인 누르면 메인으로 복귀 (새로고침)
+            const form = document.createElement('form');
+            form.method = 'POST'; 
+            form.action = scriptURL; 
+            form.target = 'hidden_iframe';
+
+            const data = { 'name': name, 'phone': phone, 'email': email, 'result': resultText };
+            for(let k in data){ 
+                let i=document.createElement('input'); 
+                i.type='hidden'; 
+                i.name=k; 
+                i.value=data[k]; 
+                form.appendChild(i); 
+            }
+
+            document.body.appendChild(form); 
+            form.submit();
+
+            // 전송 완료 알림 후 메인으로 자동 복귀 (3번 요청 반영)
             alert('입력하신 이메일로 발송하였습니다.');
             location.reload(); 
         }
