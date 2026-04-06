@@ -2,32 +2,55 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>교통사고 경상환자 예상 합의금 계산 프로그램</title>
     <style>
-        .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; font-family: 'Malgun Gothic', sans-serif; }
-        h2 { text-align: center; font-size: 20px; margin-bottom: 20px; color: #333; }
-        label { display: block; font-size: 14px; margin: 10px 0; font-weight: bold; }
-        input[type="date"], input[type="number"], input[type="text"], input[type="email"], input[type="tel"], select { 
-            width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px;
+        /* 모든 요소의 너비 계산 방식을 테두리 포함으로 설정 (잘림 방지 핵심) */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        html, body { margin: 0; padding: 0; overflow-x: hidden; width: 100%; }
+        
+        .container { 
+            width: 100%; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 15px; 
+            font-family: 'Malgun Gothic', sans-serif; 
         }
+
+        h2 { text-align: center; font-size: 1.2em; margin-bottom: 20px; color: #333; }
+        label { display: block; font-size: 14px; margin: 10px 0 5px 0; font-weight: bold; }
+        
+        /* 입력창 모바일 최적화 */
+        input[type="date"], input[type="number"], input[type="text"], input[type="email"], input[type="tel"], select { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            font-size: 16px; /* 모바일 자동확대 방지 (16px 이상) */
+        }
+        
         .vip-filter { background-color: #fff3f3; border: 2px solid #ff4d4d; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
-        .vip-filter label { color: #d9534f; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; margin: 0;}
-        .vip-filter input[type="checkbox"] { transform: scale(1.5); width: auto; margin: 0; }
+        .vip-filter label { color: #d9534f; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; margin: 0;}
+        .vip-filter input[type="checkbox"] { transform: scale(1.3); width: auto; margin: 0; }
+
         button { width: 100%; padding: 15px; background-color: #007bff; color: white; border: none; cursor: pointer; font-size: 16px; font-weight: bold; border-radius: 5px; margin-top: 10px; }
-        button:hover { background-color: #0056b3; }
-        .result { margin-top: 20px; padding: 20px; background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; line-height: 1.8; }
         .hidden { display: none !important; }
+
+        /* 모달 팝업 모바일 대응 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #fff; padding: 25px; border-radius: 10px; width: 95%; max-width: 420px; text-align: center; max-height: 95vh; overflow-y: auto; }
+        .modal-content { background: #fff; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; max-height: 95vh; overflow-y: auto; }
         .submit-btn { background-color: #ffe812; color: #3c1e1e; border: none; padding: 15px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; }
-        #premiumCta { background-color: #fdf2f2; border: 1px solid #ff4d4d; padding: 25px; border-radius: 10px; text-align: center; margin-top: 20px; }
+        
+        #premiumCta { background-color: #fdf2f2; border: 1px solid #ff4d4d; padding: 20px; border-radius: 10px; text-align: center; margin-top: 20px; }
         .call-btn { background-color: #d9534f; color: white; border: none; padding: 15px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-bottom: 12px; }
         .back-btn { background-color: #666; color: white; border: none; padding: 10px; width: 100%; font-size: 14px; border-radius: 5px; cursor: pointer; }
         
-        /* 개인정보 안내 박스 스타일 */
         .privacy-detail { text-align: left; background: #f8f9fa; border: 1px solid #ddd; padding: 12px; font-size: 12px; color: #555; border-radius: 5px; margin-top: 10px; line-height: 1.5; }
-        .privacy-detail b { color: #333; }
+        
+        /* 결과 텍스트 영역 (시트 전송용 데이터 보관함) */
+        #result { display: none; }
     </style>
 </head>
 <body>
@@ -40,7 +63,7 @@
 
         <div id="premiumCta" class="hidden">
             <h3 style="color:#d9534f; margin-top:0;">⚠️ 정밀 보상 평가 대상입니다.</h3>
-            <p style="font-size:14px;">해당 사고는 단순 경상환자 평가방식이 아니며, <b>후유장해 등 기타 사정에 따라 금액이 크게 달라질 수 있으므로</b> 대표 손해사정사와 전화상담이 필요합니다.</p>
+            <p style="font-size:14px; line-height: 1.6;">해당 사고는 단순 경상환자 평가방식이 아니며, <b>후유장해 등 기타 사정에 따라 금액이 크게 달라질 수 있으므로</b> 대표 손해사정사와 전화상담이 필요합니다.</p>
             <button class="call-btn" onclick="location.href='tel:070-8065-2298'">대표 손해사정사 직통 상담하기</button>
             <button class="back-btn" onclick="goBack()">이전 화면으로 돌아가기</button>
         </div>
@@ -64,9 +87,9 @@
             </select>
             <label>8. 월 소득액(모르면 도시일용임금 선택)</label>
             <div style="font-size: 14px; margin-bottom: 10px;">
-                <input type="radio" name="incomeOption" id="incomeDirect" onclick="selectIncomeOption('direct')"> 직접입력
-                <input type="radio" name="incomeOption" id="incomeFixed" onclick="selectIncomeOption('fixed')" checked> 도시일용임금
-                <input type="text" id="incomeInputDirect" placeholder="원 단위(세후 금액으로 입력)" disabled style="margin-top:5px;">
+                <label style="display:inline-block; font-weight:normal;"><input type="radio" name="incomeOption" onclick="selectIncomeOption('direct')"> 직접입력</label>
+                <label style="display:inline-block; font-weight:normal; margin-left:10px;"><input type="radio" name="incomeOption" onclick="selectIncomeOption('fixed')" checked> 도시일용임금</label>
+                <input type="text" id="incomeInputDirect" placeholder="원 단위(세후 금액으로 입력)" disabled style="margin-top:8px;">
             </div>
             <label>9. 보험사 부담 치료비</label><input type="text" id="insuranceCost" placeholder="원 단위 (모르면 생략)">
             <label>10. 직불치료비</label><input type="text" id="directPayment" placeholder="원 단위(모르거나 없으면 생략)">
@@ -79,7 +102,8 @@
             </select>
             <button onclick="runCalcAndShowModal()">예상 합의금 계산하기</button>
         </div>
-        <div class="result hidden" id="result"></div>
+        
+        <div id="result"></div>
     </div>
 
     <div id="leadModal" class="modal-overlay hidden">
@@ -99,13 +123,12 @@
 
             <div class="privacy-detail">
                 <b>[개인정보 수집 및 이용안내]</b><br>
-                1. 수집항목: 성함, 연락처, 이메일, 입력하신 사고 정보<br>
-                2. 수집목적: 합의금 산출 리포트 전송 및 보상 상담<br>
-                3. 보유기간: <b>수집일로부터 6개월 (이후 즉시 파기)</b><br>
-                ※ 동의를 거부하실 수 있으나, 이 경우 리포트 발송 서비스 이용이 제한됩니다.
+                1. 수집항목: 성함, 연락처, 이메일, 사고 정보<br>
+                2. 목적: 합의금 리포트 전송 및 보상 상담<br>
+                3. 기간: <b>6개월 (이후 즉시 파기)</b>
             </div>
             
-            <button class="submit-btn" onclick="submitLead()">상세 리포트 무료로 받기</button>
+            <button id="finalSubmitBtn" class="submit-btn" onclick="submitLead()">상세 리포트 무료로 받기</button>
             <p style="font-size:12px; color:#999; cursor:pointer; text-decoration:underline; margin-top:15px;" onclick="document.getElementById('leadModal').classList.add('hidden')">닫기</p>
         </div>
     </div>
@@ -150,7 +173,6 @@
             let 치료비상계 = -Math.abs(insCost*(fault/100));
             let total = Math.floor(과실상계+치료비상계);
 
-            // '|BR|' 기호를 심어서 전송 (줄바꿈 방어)
             detailedResultHTML = `총 예상 합의금액: ${Math.floor(total*0.8).toLocaleString()}원 ~ ${total.toLocaleString()}원|BR|` +
             `위자료: ${formatNumber(위자료)}원|BR|` +
             `휴업손해: ${formatNumber(휴업손해)}원|BR|` +
@@ -172,6 +194,10 @@
                 alert('모든 항목을 입력하고 동의함에 체크해주세요.'); 
                 return; 
             }
+
+            const btn = document.getElementById('finalSubmitBtn');
+            btn.innerText = "전송 중...";
+            btn.disabled = true;
 
             const scriptURL = "https://script.google.com/macros/s/AKfycbyJcaVYjXrhQdgZqI6uRAJVcPQ-a41IVza6f-nJvFhm20dNm7okqn8KkJ7YKgiNL85k/exec";
 
@@ -200,8 +226,11 @@
             }
             document.body.appendChild(form); form.submit();
 
-            alert('입력하신 이메일로 리포트를 발송하였습니다.');
-            location.reload(); 
+            // 🌟 이메일 발송 보강: 데이터가 구글 서버로 충분히 넘어갈 시간을 준 뒤 알림을 띄웁니다.
+            setTimeout(() => {
+                alert('입력하신 이메일로 리포트를 발송하였습니다.');
+                location.reload();
+            }, 1000); 
         }
     </script>
 </body>
