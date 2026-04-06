@@ -5,28 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>교통사고 경상환자 예상 합의금 계산 프로그램</title>
     <style>
-        /* 기본 레이아웃 */
         .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; font-family: 'Malgun Gothic', sans-serif; }
         h2 { text-align: center; font-size: 20px; margin-bottom: 20px; color: #333; }
         label { display: block; font-size: 14px; margin: 10px 0; font-weight: bold; }
         input[type="date"], input[type="number"], input[type="text"], input[type="email"], select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         
-        /* VIP 필터 (중상해 타겟팅) */
         .vip-filter { background-color: #fff3f3; border: 2px solid #ff4d4d; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
         .vip-filter label { color: #d9534f; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; margin: 0;}
         .vip-filter input[type="checkbox"] { transform: scale(1.5); width: auto; }
 
-        /* 버튼 및 결과 */
         button { width: 100%; padding: 15px; background-color: #007bff; color: white; border: none; cursor: pointer; font-size: 16px; font-weight: bold; border-radius: 5px; margin-top: 10px; }
         .result { margin-top: 20px; padding: 20px; background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; line-height: 1.8; }
         .hidden { display: none !important; }
 
-        /* 모달 팝업 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: #fff; padding: 30px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; }
         .submit-btn { background-color: #ffe812; color: #3c1e1e; border: none; padding: 15px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; }
         
-        /* 중상해 안내 화면 */
         #premiumCta { background-color: #fdf2f2; border: 1px solid #ff4d4d; padding: 20px; border-radius: 10px; text-align: center; margin-top: 20px; }
         .call-btn { background-color: #d9534f; color: white; border: none; padding: 15px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; }
     </style>
@@ -36,16 +31,12 @@
         <h2>교통사고 예상 합의금 계산 시스템</h2>
 
         <div class="vip-filter">
-            <label>
-                <input type="checkbox" id="vipCheck"> 
-                골절, 인대 파열, 또는 수술을 받으셨나요?
-            </label>
+            <label><input type="checkbox" id="vipCheck"> 골절, 인대 파열, 또는 수술을 받으셨나요?</label>
         </div>
 
         <div id="premiumCta" class="hidden">
             <h3 style="color:#d9534f; margin-top:0;">⚠️ 정밀 보상 평가 대상입니다.</h3>
             <p style="font-size:14px;">해당 사고는 단순 위자료 계산이 아닌, <br><b>후유장해 사정</b>에 따라 금액이 크게 달라집니다.</p>
-            <p>더채움 손해사정 대표의 심층 분석을 받으세요.</p>
             <button class="call-btn" onclick="location.href='tel:010-0000-0000'">대표 손해사정사 직통 상담하기</button>
         </div>
 
@@ -59,23 +50,38 @@
             </select>
             <label>4. 입원일수</label><input type="number" id="hospitalDays" value="0">
             <label>5. 통원일수</label><input type="number" id="clinicDays" value="0">
+            
             <label>6. 본인과실 (%)</label>
             <select id="userFault">
-                <option value="0">0%</option><option value="20">20%</option><option value="50">50%</option>
+                <script>
+                    for(let i=0; i<=100; i+=5) {
+                        document.write(`<option value="${i}">${i}%</option>`);
+                    }
+                </script>
             </select>
+
             <label>7. 상해급수</label>
             <select id="injuryGrade">
                 <option value="8">8급</option><option value="9">9급</option><option value="12">12~14급</option>
             </select>
-            <label>8. 월 소득액</label>
+
+            <label>8. 월 소득액(모르면 도시일용임금 선택)</label>
             <div style="font-size: 14px; margin-bottom: 10px;">
-                <input type="radio" name="incomeOption" onclick="selectIncomeOption('direct')"> 직접입력
-                <input type="radio" name="incomeOption" onclick="selectIncomeOption('fixed')" checked> 도시일용임금
-                <input type="text" id="incomeInputDirect" placeholder="월 소득액 입력" disabled style="margin-top:5px;">
+                <input type="radio" name="incomeOption" id="incomeDirect" onclick="selectIncomeOption('direct')"> 직접입력
+                <input type="radio" name="incomeOption" id="incomeFixed" onclick="selectIncomeOption('fixed')" checked> 도시일용임금
+                <input type="text" id="incomeInputDirect" placeholder="원 단위(세후 금액으로 입력)" disabled style="margin-top:5px;">
             </div>
+
             <label>9. 보험사 부담 치료비</label><input type="text" id="insuranceCost" placeholder="원 단위 (모르면 생략)">
-            <label>10. 직불치료비</label><input type="text" id="directPayment" placeholder="원 단위">
-            <label>11. 향후치료일수</label><input type="number" id="treatmentDays" value="0">
+            
+            <label>10. 직불치료비</label><input type="text" id="directPayment" placeholder="원 단위(모르거나 없으면 생략)">
+            
+            <label>11. 향후치료일수(척추 관련 진단시만 3주로 선택)</label>
+            <select id="treatmentDays">
+                <option value="7">1주</option>
+                <option value="14" selected>2주</option>
+                <option value="21">3주</option>
+            </select>
 
             <button onclick="runCalcAndShowModal()">예상 합의금 계산하기</button>
         </div>
@@ -99,7 +105,6 @@
     </div>
 
     <script>
-        // 골절 체크박스 이벤트
         document.getElementById('vipCheck').addEventListener('change', function() {
             if(this.checked) {
                 document.getElementById('mainForm').classList.add('hidden');
@@ -111,7 +116,6 @@
             }
         });
 
-        // 대표님 오리지널 계산 로직 통합
         let detailedResultHTML = '';
         function selectIncomeOption(o){ document.getElementById('incomeInputDirect').disabled=(o==='fixed'); }
         function formatNumber(v){ return v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
@@ -161,7 +165,6 @@
             const scriptURL = "https://script.google.com/macros/s/AKfycbyJcaVYjXrhQdgZqI6uRAJVcPQ-a41IVza6f-nJvFhm20dNm7okqn8KkJ7YKgiNL85k/exec";
             const resultText = document.getElementById('result').innerText;
 
-            // 투명 iframe 전송
             let iframe = document.createElement('iframe');
             iframe.name = 'hidden_iframe'; iframe.style.display = 'none'; document.body.appendChild(iframe);
             const form = document.createElement('form');
@@ -170,7 +173,7 @@
             for(let k in data){ let i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=data[k]; form.appendChild(i); }
             document.body.appendChild(form); form.submit();
 
-            alert('상세 리포트가 이메일로 발송되었습니다!');
+            alert('리포트가 이메일로 발송되었습니다!');
             document.getElementById('leadModal').classList.add('hidden');
             document.getElementById('mainForm').classList.add('hidden');
             document.getElementById('result').classList.remove('hidden');
