@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>교통사고 경상환자 예상 합의금 계산 프로그램</title>
     <style>
-        /* 모든 요소의 너비 계산 방식을 테두리 포함으로 설정 (잘림 방지 핵심) */
+        /* 모든 요소의 너비 계산 방식을 테두리 포함으로 설정 (잘림 방지) */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         html, body { margin: 0; padding: 0; overflow-x: hidden; width: 100%; }
@@ -21,14 +21,29 @@
         h2 { text-align: center; font-size: 1.2em; margin-bottom: 20px; color: #333; }
         label { display: block; font-size: 14px; margin: 10px 0 5px 0; font-weight: bold; }
         
-        /* 입력창 모바일 최적화 */
+        /* 🌟 입력창 레이아웃 및 너비 완벽 일치화 (수정 포인트) */
         input[type="date"], input[type="number"], input[type="text"], input[type="email"], input[type="tel"], select { 
-            width: 100%; 
+            display: block; /* 강제 줄바꿈 */
+            width: 100% !important; /* 부모 너비에 100% 맞춤 */
             padding: 12px; 
             margin-bottom: 10px; 
             border: 1px solid #ccc; 
             border-radius: 5px; 
-            font-size: 16px; /* 모바일 자동확대 방지 (16px 이상) */
+            font-size: 16px; /* 모바일 자동확대 방지 */
+            background-color: #fff;
+            /* 브라우저별 날짜/선택창 특유의 여백 및 너비 편차 제거 */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        /* 🌟 select 박스에만 화살표 아이콘 다시 입히기 (appearance: none 사용 시 필요) */
+        select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 14px;
+            padding-right: 40px;
         }
         
         .vip-filter { background-color: #fff3f3; border: 2px solid #ff4d4d; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
@@ -38,7 +53,6 @@
         button { width: 100%; padding: 15px; background-color: #007bff; color: white; border: none; cursor: pointer; font-size: 16px; font-weight: bold; border-radius: 5px; margin-top: 10px; }
         .hidden { display: none !important; }
 
-        /* 모달 팝업 모바일 대응 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: #fff; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; max-height: 95vh; overflow-y: auto; }
         .submit-btn { background-color: #ffe812; color: #3c1e1e; border: none; padding: 15px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; }
@@ -48,8 +62,6 @@
         .back-btn { background-color: #666; color: white; border: none; padding: 10px; width: 100%; font-size: 14px; border-radius: 5px; cursor: pointer; }
         
         .privacy-detail { text-align: left; background: #f8f9fa; border: 1px solid #ddd; padding: 12px; font-size: 12px; color: #555; border-radius: 5px; margin-top: 10px; line-height: 1.5; }
-        
-        /* 결과 텍스트 영역 (시트 전송용 데이터 보관함) */
         #result { display: none; }
     </style>
 </head>
@@ -87,9 +99,9 @@
             </select>
             <label>8. 월 소득액(모르면 도시일용임금 선택)</label>
             <div style="font-size: 14px; margin-bottom: 10px;">
-                <label style="display:inline-block; font-weight:normal;"><input type="radio" name="incomeOption" onclick="selectIncomeOption('direct')"> 직접입력</label>
-                <label style="display:inline-block; font-weight:normal; margin-left:10px;"><input type="radio" name="incomeOption" onclick="selectIncomeOption('fixed')" checked> 도시일용임금</label>
-                <input type="text" id="incomeInputDirect" placeholder="원 단위(세후 금액으로 입력)" disabled style="margin-top:8px;">
+                <label style="display:inline-block; font-weight:normal; margin-bottom:5px;"><input type="radio" name="incomeOption" onclick="selectIncomeOption('direct')"> 직접입력</label>
+                <label style="display:inline-block; font-weight:normal; margin-left:10px; margin-bottom:5px;"><input type="radio" name="incomeOption" onclick="selectIncomeOption('fixed')" checked> 도시일용임금</label>
+                <input type="text" id="incomeInputDirect" placeholder="원 단위(세후 금액으로 입력)" disabled style="margin-top:5px;">
             </div>
             <label>9. 보험사 부담 치료비</label><input type="text" id="insuranceCost" placeholder="원 단위 (모르면 생략)">
             <label>10. 직불치료비</label><input type="text" id="directPayment" placeholder="원 단위(모르거나 없으면 생략)">
@@ -226,7 +238,6 @@
             }
             document.body.appendChild(form); form.submit();
 
-            // 🌟 이메일 발송 보강: 데이터가 구글 서버로 충분히 넘어갈 시간을 준 뒤 알림을 띄웁니다.
             setTimeout(() => {
                 alert('입력하신 이메일로 리포트를 발송하였습니다.');
                 location.reload();
