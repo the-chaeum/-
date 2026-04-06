@@ -3,74 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>교통사고 경상환자 예상 합의금 계산 프로그램</title>
+    <title>교통사고 예상 합의금 계산 시스템</title>
     <style>
-        /* 모든 요소의 너비 계산 방식을 테두리 포함으로 설정 (잘림 방지) */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
         html, body { margin: 0; padding: 0; overflow-x: hidden; width: 100%; }
-        
-        .container { 
-            width: 100%; 
-            max-width: 600px; 
-            margin: 0 auto; 
-            padding: 15px; 
-            font-family: 'Malgun Gothic', sans-serif; 
-        }
-
+        .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 15px; font-family: 'Malgun Gothic', sans-serif; }
         h2 { text-align: center; font-size: 1.2em; margin-bottom: 20px; color: #333; }
         label { display: block; font-size: 14px; margin: 10px 0 5px 0; font-weight: bold; }
         
-        /* 🌟 입력창 세로 높이 고정 및 레이아웃 최적화 (수정 포인트) */
         input[type="date"], input[type="number"], input[type="text"], input[type="email"], input[type="tel"], select { 
-            display: block;
-            width: 100% !important; 
-            height: 50px; /* 세로 길이를 50px로 시원하게 고정 */
-            padding: 0 12px; /* 좌우 여백만 설정 (높이는 height가 결정) */
-            margin-bottom: 10px; 
-            border: 1px solid #ccc; 
-            border-radius: 5px; 
-            font-size: 16px; /* 모바일 자동확대 방지 */
-            background-color: #fff;
-            color: #333;
-            /* 브라우저별 고유 스타일 제거 */
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
+            display: block; width: 100% !important; height: 50px; padding: 0 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; background-color: #fff; color: #333; -webkit-appearance: none; appearance: none;
         }
-
-        /* select 박스 화살표 재설정 */
-        select {
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 14px;
-            padding-right: 40px;
-        }
+        select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px; padding-right: 40px; }
         
         .vip-filter { background-color: #fff3f3; border: 2px solid #ff4d4d; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
         .vip-filter label { color: #d9534f; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; margin: 0;}
         .vip-filter input[type="checkbox"] { transform: scale(1.3); width: auto; margin: 0; }
-
         button { width: 100%; padding: 15px; background-color: #007bff; color: white; border: none; cursor: pointer; font-size: 16px; font-weight: bold; border-radius: 5px; margin-top: 10px; }
-        button:hover { background-color: #0056b3; }
         .hidden { display: none !important; }
-
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #fff; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; max-height: 95vh; overflow-y: auto; }
+        .modal-content { background: #fff; padding: 25px; border-radius: 10px; width: 95%; max-width: 420px; text-align: center; max-height: 95vh; overflow-y: auto; }
         .submit-btn { background-color: #ffe812; color: #3c1e1e; border: none; padding: 15px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; }
-        
-        #premiumCta { background-color: #fdf2f2; border: 1px solid #ff4d4d; padding: 20px; border-radius: 10px; text-align: center; margin-top: 20px; }
+        #premiumCta { background-color: #fdf2f2; border: 1px solid #ff4d4d; padding: 25px; border-radius: 10px; text-align: center; margin-top: 20px; }
         .call-btn { background-color: #d9534f; color: white; border: none; padding: 15px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-bottom: 12px; }
         .back-btn { background-color: #666; color: white; border: none; padding: 10px; width: 100%; font-size: 14px; border-radius: 5px; cursor: pointer; }
-        
         .privacy-detail { text-align: left; background: #f8f9fa; border: 1px solid #ddd; padding: 12px; font-size: 12px; color: #555; border-radius: 5px; margin-top: 10px; line-height: 1.5; }
-        #result { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>교통사고 경상환자 예상 합의금 계산</h2>
+        <h2>교통사고 예상 합의금 계산 시스템</h2>
 
         <div class="vip-filter">
             <label><input type="checkbox" id="vipCheck"> 골절, 인대 파열, 또는 수술을 받으셨나요?</label>
@@ -78,7 +40,7 @@
 
         <div id="premiumCta" class="hidden">
             <h3 style="color:#d9534f; margin-top:0;">⚠️ 정밀 보상 평가 대상입니다.</h3>
-            <p style="font-size:14px; line-height: 1.6;">해당 사고는 단순 경상환자 평가방식이 아니며, <b>후유장해 등 기타 사정에 따라 금액이 크게 달라질 수 있으므로</b> 대표 손해사정사와 전화상담이 필요합니다.</p>
+            <p style="font-size:14px;">해당 사고는 단순 경상환자 평가방식이 아니며, <b>후유장해 등 기타 사정에 따라 금액이 크게 달라질 수 있으므로</b> 대표 손해사정사와 전화상담이 필요합니다.</p>
             <button class="call-btn" onclick="location.href='tel:070-8065-2298'">대표 손해사정사 직통 상담하기</button>
             <button class="back-btn" onclick="goBack()">이전 화면으로 돌아가기</button>
         </div>
@@ -110,39 +72,31 @@
             <label>10. 직불치료비</label><input type="text" id="directPayment" placeholder="원 단위(모르거나 없으면 생략)">
             <label>11. 향후치료일수(척추 관련 진단시만 3주로 선택)</label>
             <select id="treatmentDays">
-                <option value="7">1주</option>
-                <option value="14" selected>2주</option>
-                <option value="21">3주</option>
-                <option value="28">4주</option>
+                <option value="7">1주</option><option value="14" selected>2주</option><option value="21">3주</option><option value="28">4주</option>
             </select>
             <button onclick="runCalcAndShowModal()">예상 합의금 계산하기</button>
         </div>
-        
-        <div id="result"></div>
+        <div id="result" style="display:none;"></div>
     </div>
 
     <div id="leadModal" class="modal-overlay hidden">
         <div class="modal-content">
             <h3 style="margin-top:0;">상세 리포트 발송 📧</h3>
             <p style="font-size:14px; color:#666;">입력하신 이메일로 <b>상세 산출 내역을 즉시 발송해 드립니다.</b></p>
-            
             <input type="text" id="userName" placeholder="이름">
             <input type="tel" id="userPhone" placeholder="연락처 (01012345678)">
             <input type="email" id="userEmail" placeholder="리포트 받을 이메일 주소">
-            
             <div style="font-size:14px; text-align:left; background:#fff3cd; padding:12px; border-radius:5px; margin:10px 0; border:1px solid #ffeeba;">
                 <label style="display: flex; align-items: center; gap: 8px; margin: 0; cursor: pointer; font-weight: bold;">
                     <input type="checkbox" id="privacyConsent" style="width: auto; margin: 0;"> 개인정보 수집 및 이용에 동의합니다. [필수]
                 </label>
             </div>
-
             <div class="privacy-detail">
                 <b>[개인정보 수집 및 이용안내]</b><br>
                 1. 수집항목: 성함, 연락처, 이메일, 사고 정보<br>
                 2. 목적: 합의금 리포트 전송 및 보상 상담<br>
                 3. 기간: <b>6개월 (이후 즉시 파기)</b>
             </div>
-            
             <button id="finalSubmitBtn" class="submit-btn" onclick="submitLead()">상세 리포트 무료로 받기</button>
             <p style="font-size:12px; color:#999; cursor:pointer; text-decoration:underline; margin-top:15px;" onclick="document.getElementById('leadModal').classList.add('hidden')">닫기</p>
         </div>
@@ -176,19 +130,25 @@
             const grade = parseInt(document.getElementById('injuryGrade').value);
             const insCost = parseInt(removeCommas(document.getElementById('insuranceCost').value))||0;
             const directPay = parseInt(removeCommas(document.getElementById('directPayment').value))||0;
-            let income = document.getElementById('incomeInputDirect').disabled ? 3144413 : (parseInt(removeCommas(document.getElementById('incomeInputDirect').value))||0);
+            
+            // 🌟 2026년 상반기 자동차보험 도시일용임금 업데이트 (3,284,525원)
+            let income = document.getElementById('incomeInputDirect').disabled ? 3284525 : (parseInt(removeCommas(document.getElementById('incomeInputDirect').value))||0);
 
             const age = new Date().getFullYear() - new Date(birth).getFullYear();
             let 위자료 = (grade==8)?300000:(grade==9)?250000:150000;
             let 휴업손해 = Math.floor((income/30)*hDays*0.85);
             let tDays = parseInt(document.getElementById('treatmentDays').value)||0;
-            let 향후치료비 = (age<10?91653:age<20?152250:age<30?143106:age<40?116760:age<50?112536:age<60?118382:age<70?132372:200109)*tDays;
-            let 기타손해 = 8000*cDays;
-            let 과실상계 = (위자료+휴업손해+기타손해+향후치료비+directPay)*(1-fault/100);
-            let 치료비상계 = -Math.abs(insCost*(fault/100));
-            let total = Math.floor(과실상계+치료비상계);
+            
+            // 🌟 2024년 통계자료 '외래 입내원일당 진료비' 기준 계수 업데이트
+            let unitCost = (age < 10 ? 54907 : age < 20 ? 73883 : age < 30 ? 87444 : age < 40 ? 81114 : age < 50 ? 78144 : age < 60 ? 71033 : age < 70 ? 64771 : 56232);
+            let 향후치료비 = unitCost * tDays;
+            
+            let 기타손해 = 8000 * cDays;
+            let 과실상계 = (위자료 + 휴업손해 + 기타손해 + 향후치료비 + directPay) * (1 - fault / 100);
+            let 치료비상계 = -Math.abs(insCost * (fault / 100));
+            let total = Math.floor(과실상계 + 치료비상계);
 
-            detailedResultHTML = `총 예상 합의금액: ${Math.floor(total*0.8).toLocaleString()}원 ~ ${total.toLocaleString()}원|BR|` +
+            detailedResultHTML = `총 예상 합의금액: ${Math.floor(total * 0.8).toLocaleString()}원 ~ ${total.toLocaleString()}원|BR|` +
             `위자료: ${formatNumber(위자료)}원|BR|` +
             `휴업손해: ${formatNumber(휴업손해)}원|BR|` +
             `향후치료비: ${formatNumber(향후치료비)}원|BR|` +
@@ -205,17 +165,12 @@
             const name = document.getElementById('userName').value;
             const phone = document.getElementById('userPhone').value;
             const email = document.getElementById('userEmail').value;
-            if(!name || !phone || !email || !document.getElementById('privacyConsent').checked){ 
-                alert('모든 항목을 입력하고 동의함에 체크해주세요.'); 
-                return; 
-            }
+            if(!name || !phone || !email || !document.getElementById('privacyConsent').checked){ alert('모든 항목을 입력하고 동의함에 체크해주세요.'); return; }
 
             const btn = document.getElementById('finalSubmitBtn');
-            btn.innerText = "전송 중...";
-            btn.disabled = true;
+            btn.innerText = "전송 중..."; btn.disabled = true;
 
             const scriptURL = "https://script.google.com/macros/s/AKfycbyJcaVYjXrhQdgZqI6uRAJVcPQ-a41IVza6f-nJvFhm20dNm7okqn8KkJ7YKgiNL85k/exec";
-
             const data = {
                 'name': name, 'phone': phone, 'email': email,
                 'birthdate': document.getElementById('birthdate').value,
@@ -236,15 +191,10 @@
             iframe.name = 'hidden_iframe'; iframe.style.display = 'none'; document.body.appendChild(iframe);
             const form = document.createElement('form');
             form.method = 'POST'; form.action = scriptURL; form.target = 'hidden_iframe';
-            for(let k in data){ 
-                let i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=data[k]; form.appendChild(i); 
-            }
+            for(let k in data){ let i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=data[k]; form.appendChild(i); }
             document.body.appendChild(form); form.submit();
 
-            setTimeout(() => {
-                alert('입력하신 이메일로 리포트를 발송하였습니다.');
-                location.reload();
-            }, 1000); 
+            setTimeout(() => { alert('입력하신 이메일로 리포트를 발송하였습니다.'); location.reload(); }, 1200); 
         }
     </script>
 </body>
