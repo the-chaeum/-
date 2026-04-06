@@ -19,11 +19,15 @@
         .result { margin-top: 20px; padding: 20px; background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; line-height: 1.8; }
         .hidden { display: none !important; }
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #fff; padding: 30px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; }
+        .modal-content { background: #fff; padding: 25px; border-radius: 10px; width: 95%; max-width: 420px; text-align: center; max-height: 90vh; overflow-y: auto; }
         .submit-btn { background-color: #ffe812; color: #3c1e1e; border: none; padding: 15px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; }
         #premiumCta { background-color: #fdf2f2; border: 1px solid #ff4d4d; padding: 25px; border-radius: 10px; text-align: center; margin-top: 20px; }
         .call-btn { background-color: #d9534f; color: white; border: none; padding: 15px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-bottom: 12px; }
         .back-btn { background-color: #666; color: white; border: none; padding: 10px; width: 100%; font-size: 14px; border-radius: 5px; cursor: pointer; }
+        
+        /* 개인정보 동의 박스 스타일 */
+        .privacy-detail { text-align: left; background: #f8f9fa; border: 1px solid #ddd; padding: 12px; font-size: 12px; color: #555; border-radius: 5px; margin-bottom: 10px; line-height: 1.5; }
+        .privacy-detail b { color: #333; }
     </style>
 </head>
 <body>
@@ -81,16 +85,27 @@
     <div id="leadModal" class="modal-overlay hidden">
         <div class="modal-content">
             <h3 style="margin-top:0;">상세 리포트 발송 📧</h3>
-            <p style="font-size:14px; color:#666;">입력하신 이메일로 <b>상세 산출 내역을 즉시 발송해 드립니다.</b></p>
+            
+            <div class="privacy-detail">
+                <b>[개인정보 수집 및 이용안내]</b><br>
+                1. 수집항목: 성함, 연락처, 이메일, 입력하신 사고 정보<br>
+                2. 수집목적: 합의금 산출 리포트 전송 및 보상 상담<br>
+                3. 보유기간: <b>수집일로부터 6개월 (이후 즉시 파기)</b><br>
+                ※ 동의를 거부하실 수 있으나, 이 경우 리포트 발송 서비스 이용이 제한됩니다.
+            </div>
+
             <input type="text" id="userName" placeholder="이름">
             <input type="tel" id="userPhone" placeholder="연락처 (01012345678)">
             <input type="email" id="userEmail" placeholder="리포트 받을 이메일 주소">
-            <div style="font-size:12px; text-align:left; background:#f9f9f9; padding:12px; border-radius:5px; margin:15px 0;">
-                <label style="display: flex; align-items: center; gap: 8px; margin: 0; cursor: pointer;">
-                    <input type="checkbox" id="privacyConsent" style="width: auto; margin: 0;"> 개인정보 수집 및 이용 동의 [필수]
+            
+            <div style="font-size:13px; text-align:left; background:#fff3cd; padding:10px; border-radius:5px; margin-bottom:15px; border:1px solid #ffeeba;">
+                <label style="display: flex; align-items: center; gap: 8px; margin: 0; cursor: pointer; font-weight: bold;">
+                    <input type="checkbox" id="privacyConsent" style="width: auto; margin: 0;"> 위 개인정보 수집 및 이용에 동의합니다.
                 </label>
             </div>
+            
             <button class="submit-btn" onclick="submitLead()">상세 리포트 무료로 받기</button>
+            <p style="font-size:12px; color:#999; cursor:pointer; text-decoration:underline; margin-top:15px;" onclick="document.getElementById('leadModal').classList.add('hidden')">닫기</p>
         </div>
     </div>
 
@@ -111,7 +126,7 @@
         function formatNumber(v){ return v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
         function removeCommas(v){ return v.toString().replace(/,/g, ''); }
 
-        let detailedResultHTML = ''; // 🌟 원본 줄바꿈 데이터를 담고 있는 전역 변수
+        let detailedResultHTML = ''; 
 
         function calculate() {
             const birth = document.getElementById('birthdate').value;
@@ -134,16 +149,15 @@
             let 치료비상계 = -Math.abs(insCost*(fault/100));
             let total = Math.floor(과실상계+치료비상계);
 
-            // 🌟 이 변수에 \n 이 명확하게 포함되어야 합니다.
-            detailedResultHTML = `총 예상 합의금액: ${Math.floor(total*0.8).toLocaleString()}원 ~ ${total.toLocaleString()}원\n` +
-            `위자료: ${formatNumber(위자료)}원\n` +
-            `휴업손해: ${formatNumber(휴업손해)}원\n` +
-            `향후치료비: ${formatNumber(향후치료비)}원\n` +
-            `기타손해: ${formatNumber(기타손해)}원\n` +
-            `과실상계: ${formatNumber(Math.floor(과실상계))}원\n` +
+            // 🌟 '|BR|' 이라는 특수 문자를 줄바꿈 위치에 넣어 전송 시 손실을 막습니다.
+            detailedResultHTML = `총 예상 합의금액: ${Math.floor(total*0.8).toLocaleString()}원 ~ ${total.toLocaleString()}원|BR|` +
+            `위자료: ${formatNumber(위자료)}원|BR|` +
+            `휴업손해: ${formatNumber(휴업손해)}원|BR|` +
+            `향후치료비: ${formatNumber(향후치료비)}원|BR|` +
+            `기타손해: ${formatNumber(기타손해)}원|BR|` +
+            `과실상계: ${formatNumber(Math.floor(과실상계))}원|BR|` +
             `치료비상계: ${formatNumber(Math.floor(치료비상계))}원`;
             
-            document.getElementById('result').innerText = detailedResultHTML;
             return true;
         }
 
@@ -153,11 +167,13 @@
             const name = document.getElementById('userName').value;
             const phone = document.getElementById('userPhone').value;
             const email = document.getElementById('userEmail').value;
-            if(!name || !phone || !email || !document.getElementById('privacyConsent').checked){ alert('모든 항목을 입력해주세요.'); return; }
+            if(!name || !phone || !email || !document.getElementById('privacyConsent').checked){ 
+                alert('모든 항목을 입력하고 동의함에 체크해주세요.'); 
+                return; 
+            }
 
             const scriptURL = "https://script.google.com/macros/s/AKfycbyJcaVYjXrhQdgZqI6uRAJVcPQ-a41IVza6f-nJvFhm20dNm7okqn8KkJ7YKgiNL85k/exec";
 
-            // 🌟 화면에서 긁어오지 않고 전역변수 detailedResultHTML을 그대로 전송합니다.
             const data = {
                 'name': name, 'phone': phone, 'email': email,
                 'birthdate': document.getElementById('birthdate').value,
@@ -171,7 +187,7 @@
                 'insuranceCost': document.getElementById('insuranceCost').value,
                 'directPayment': document.getElementById('directPayment').value,
                 'treatmentDays': document.getElementById('treatmentDays').value,
-                'result': detailedResultHTML // 🌟 여기가 핵심입니다!
+                'result': detailedResultHTML // '|BR|'이 포함된 데이터 전송
             };
 
             let iframe = document.createElement('iframe');
@@ -183,7 +199,7 @@
             }
             document.body.appendChild(form); form.submit();
 
-            alert('입력하신 이메일로 발송하였습니다.');
+            alert('입력하신 이메일로 리포트를 발송하였습니다.');
             location.reload(); 
         }
     </script>
