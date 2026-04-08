@@ -52,13 +52,16 @@
                 <option value="차대차">차대차</option><option value="차대인">차대인</option><option value="차대오토바이">차대오토바이</option><option value="차대기타">차대기타</option>
             </select>
             
-            <button class="submit-btn" id="submitPremiumLeadBtn" onclick="submitPremiumLead()">[무료 프리미엄 상담 신청하기]</button>
+            <button class="submit-btn" id="submitPremiumLeadBtn" onclick="submitPremiumLead()">무료 프리미엄 보상상담 신청접수</button>
             <button class="back-btn" onclick="goBack()" style="margin-top:10px;">이전 화면으로 돌아가기</button>
         </div>
 
         <div id="premiumCta" class="hidden">
             <h3 style="color:#d9534f; margin-top:0;">⚠️ 정밀 보상 평가 대상입니다.</h3>
-            <p style="font-size:14px;">상담 신청이 완료되었습니다! <b>즉각적인 문제 해결</b>을 위해 지금 대표 손해사정사와 전화상담이 필요합니다.</p>
+            <p style="font-size:14px; line-height: 1.6;">
+                상담 신청이 완료되었습니다!<br>
+                즉각적인 문제 해결을 위해 대표 손해사정사가 접수확인 즉시 전화드리겠습니다.
+            </p>
             <button class="call-btn" onclick="location.href='tel:070-8065-2298'">대표 손해사정사 직통 상담하기</button>
             <button class="back-btn" onclick="goBack()">이전 화면으로 돌아가기</button>
         </div>
@@ -103,8 +106,6 @@
             <button onclick="runCalcAndShowModal()">예상 합의금 계산하기</button>
         </div>
 
-        <div id="result" style="display:none;"></div>
-        
         <div style="text-align: center; margin-top: 25px; font-size: 12px; color: #aaa;">
             v1.1 (2026.04 최신 기준 반영)
         </div>
@@ -184,12 +185,11 @@
     </div>
 
     <script>
-        // 상단 체크박스 이벤트 핸들러 수정
         document.getElementById('vipCheck').addEventListener('change', function() {
             const isVip = this.checked;
             document.getElementById('mainForm').classList.toggle('hidden', isVip);
             document.getElementById('premiumLeadForm').classList.toggle('hidden', !isVip);
-            document.getElementById('premiumCta').classList.add('hidden'); // 전화 안내는 신청 후에만 노출
+            document.getElementById('premiumCta').classList.add('hidden');
         });
 
         function goBack() {
@@ -241,14 +241,13 @@
 
         function runCalcAndShowModal() { if(calculate()) document.getElementById('leadModal').classList.remove('hidden'); }
 
-        // 무료 프리미엄 상담 신청 로직
         function submitPremiumLead() {
             const name = document.getElementById('majorName').value;
             const phone = document.getElementById('majorPhone').value;
             if (!name || !phone) { alert('성함과 연락처를 입력해주세요.'); return; }
 
             const btn = document.getElementById('submitPremiumLeadBtn');
-            btn.innerText = "상담 신청 중..."; btn.disabled = true;
+            btn.innerText = "신청 접수 중..."; btn.disabled = true;
 
             submitLeadToGAS({
                 'name': name, 'phone': phone,
@@ -265,7 +264,6 @@
             }, 1200); 
         }
 
-        // 기존 일반 합의금 리포트 신청 로직
         function submitLead() {
             const name = document.getElementById('userName').value;
             const phone = document.getElementById('userPhone').value;
@@ -294,7 +292,6 @@
             setTimeout(() => { alert('입력하신 이메일로 리포트를 발송하였습니다.'); location.reload(); }, 1200); 
         }
 
-        // 공통 데이터 전송 함수
         function submitLeadToGAS(data) {
             const scriptURL = "https://script.google.com/macros/s/AKfycbyJcaVYjXrhQdgZqI6uRAJVcPQ-a41IVza6f-nJvFhm20dNm7okqn8KkJ7YKgiNL85k/exec";
             let iframe = document.createElement('iframe');
