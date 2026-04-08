@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>교통사고 예상 합의금 계산기 (TA1)</title>
+    <title>교통사고 예상 합의금 계산기</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { margin: 0; padding: 0; overflow-x: hidden; width: 100%; }
@@ -23,7 +23,10 @@
         .hidden { display: none !important; }
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: #fff; padding: 25px; border-radius: 10px; width: 95%; max-width: 420px; text-align: center; max-height: 95vh; overflow-y: auto; }
-        .submit-btn { background-color: #ffe812; color: #3c1e1e; border: none; padding: 15px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; }
+        
+        /* 노란색 버튼 중앙 정렬 및 디자인 */
+        .submit-btn { background-color: #ffe812; color: #3c1e1e; border: none; padding: 15px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; text-align: center; display: block; }
+        
         #premiumCta { background-color: #fdf2f2; border: 1px solid #ff4d4d; padding: 25px; border-radius: 10px; text-align: center; margin-top: 20px; }
         .call-btn { background-color: #d9534f; color: white; border: none; padding: 15px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-bottom: 12px; }
         .back-btn { background-color: #666; color: white; border: none; padding: 10px; width: 100%; font-size: 14px; border-radius: 5px; cursor: pointer; }
@@ -35,13 +38,13 @@
         <h2>교통사고 예상 합의금 계산기</h2>
 
         <div class="vip-filter">
-            <label><input type="checkbox" id="vipCheck"> 골절, 인대 파열, 또는 수술을 받으셨나요?</label>
+            <label><input type="checkbox" id="vipCheck"> 골절, 인대파열 또는 수술을 받았거나 사망사고인가요?</label>
         </div>
 
         <div id="premiumLeadForm" class="hidden" style="border: 2px solid #ff4d4d; padding: 20px; border-radius: 8px; background-color: #fdf2f2;">
-            <h3 style="color:#d9534f; margin-top:0;">⚠️ 중상해·사망 사고 프리미엄 보상 상담</h3>
-            <p style="font-size:14px; color:#666;">해당 사고는 단순 계산이 아닌, **후유장해 및 위자료 정밀 평가**가 필수적입니다. 대표 손해사정사가 직접 검토 후 연락드립니다.</p>
-            <label>성함</label><input type="text" id="majorName" placeholder="예: 임원현">
+            <h3 style="color:#d9534f; margin-top:0; text-align: center;">⚠️ 무료 프리미엄 보상 상담</h3>
+            <p style="font-size:14px; color:#666; text-align: center;">해당 사고는 단순 계산이 아닌, <b>후유장해 및 위자료 정밀 평가</b>가 필수적입니다. 대표 손해사정사가 직접 검토 후 연락드립니다.</p>
+            <label>성함</label><input type="text" id="majorName" placeholder="예: 홍길동">
             <label>연락처</label><input type="tel" id="majorPhone" placeholder="010-XXXX-XXXX">
             <label>사고일자</label><input type="date" id="majorAccidentDate">
             <label>사고유형</label>
@@ -49,13 +52,13 @@
                 <option value="차대차">차대차</option><option value="차대인">차대인</option><option value="차대오토바이">차대오토바이</option><option value="차대기타">차대기타</option>
             </select>
             
-            <button class="submit-btn" id="submitPremiumLeadBtn" onclick="submitPremiumLead()">[프리미엄 상담 신청하기] (DB 저장)</button>
+            <button class="submit-btn" id="submitPremiumLeadBtn" onclick="submitPremiumLead()">[무료 프리미엄 상담 신청하기]</button>
             <button class="back-btn" onclick="goBack()" style="margin-top:10px;">이전 화면으로 돌아가기</button>
         </div>
 
         <div id="premiumCta" class="hidden">
             <h3 style="color:#d9534f; margin-top:0;">⚠️ 정밀 보상 평가 대상입니다.</h3>
-            <p style="font-size:14px;">상담 신청이 완료되었습니다! **즉각적인 문제 해결**을 위해 지금 대표 손해사정사와 전화상담이 필요합니다.</p>
+            <p style="font-size:14px;">상담 신청이 완료되었습니다! <b>즉각적인 문제 해결</b>을 위해 지금 대표 손해사정사와 전화상담이 필요합니다.</p>
             <button class="call-btn" onclick="location.href='tel:070-8065-2298'">대표 손해사정사 직통 상담하기</button>
             <button class="back-btn" onclick="goBack()">이전 화면으로 돌아가기</button>
         </div>
@@ -73,10 +76,18 @@
             <select id="userFault">
                 <script>for(let i=0; i<=100; i+=5) document.write(`<option value="${i}">${i}%</option>`);</script>
             </select>
-            <label>7. 상해급수</label>
-            <select id="injuryGrade">
-                <option value="8">8급</option><option value="9">9급</option><option value="11">10~11급</option><option value="12">12~14급</option>
-            </select>
+            
+            <label>7. 상해급수 (진단서 기준)</label>
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <select id="injuryGrade" style="width: 70% !important; margin-bottom: 0;">
+                    <option value="8">8급</option>
+                    <option value="9">9급</option>
+                    <option value="11">10~11급</option>
+                    <option value="12" selected>12~14급</option>
+                </select>
+                <button type="button" onclick="openGradeInfo()" style="width: 30%; margin-top: 0; padding: 0; background-color: #6c757d; font-size: 14px; border-radius: 5px;">🔍 급수확인</button>
+            </div>
+            
             <label>8. 월 소득액(모르면 도시일용임금 선택)</label>
             <div style="font-size: 14px; margin-bottom: 10px;">
                 <label style="display:inline-block; font-weight:normal; margin-bottom:5px;"><input type="radio" name="incomeOption" onclick="selectIncomeOption('direct')"> 직접입력</label>
@@ -91,7 +102,62 @@
             </select>
             <button onclick="runCalcAndShowModal()">예상 합의금 계산하기</button>
         </div>
+
         <div id="result" style="display:none;"></div>
+        
+        <div style="text-align: center; margin-top: 25px; font-size: 12px; color: #aaa;">
+            v1.1 (2026.04 최신 기준 반영)
+        </div>
+    </div>
+
+    <div id="gradeInfoModal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 450px; padding: 20px;">
+            <h3 style="margin-top:0; color:#333;">자동차보험 상해구분표 🏥</h3>
+            <p style="font-size:12px; color:#666; text-align:left; margin-bottom:10px;">
+                * 자배법 시행령 [별표1] 기준 (8급~14급 발췌)<br>
+                * 1~7급(중상해)은 전문가의 정밀 평가가 필요합니다.
+            </p>
+            <div style="max-height: 40vh; overflow-y: auto; text-align: left; font-size: 13px; background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #ddd; line-height: 1.6;">
+                <h4 style="color:#007bff; margin:0 0 5px 0;">■ 8급</h4>
+                <ul style="padding-left:15px; margin-top:0; margin-bottom:15px;">
+                    <li>추간판탈출증(디스크) 등 척주 손상으로 수술을 시행한 상해</li>
+                    <li>쇄골, 흉골, 늑골, 골반골의 다발성/복잡 골절</li>
+                    <li>무릎 십자인대, 반월상 연골의 부분 파열</li>
+                    <li>아킬레스건 부분 파열</li>
+                </ul>
+                <h4 style="color:#007bff; margin:0 0 5px 0;">■ 9급</h4>
+                <ul style="padding-left:15px; margin-top:0; margin-bottom:15px;">
+                    <li>추간판탈출증 (수술하지 않은 경우)</li>
+                    <li>비골(코뼈) 골절로 수술을 요하는 상해</li>
+                    <li>안면부 단순 골절, 쇄골/흉골/늑골의 단순 골절</li>
+                    <li>치아 4~5개의 결손 또는 보철을 요하는 파절</li>
+                </ul>
+                <h4 style="color:#007bff; margin:0 0 5px 0;">■ 10급</h4>
+                <ul style="padding-left:15px; margin-top:0; margin-bottom:15px;">
+                    <li>비골(코뼈)의 단순 골절</li>
+                    <li>치아 2~3개의 결손 또는 보철을 요하는 파절</li>
+                    <li>수지(손가락) 또는 족지(발가락)의 골절</li>
+                </ul>
+                <h4 style="color:#007bff; margin:0 0 5px 0;">■ 11급</h4>
+                <ul style="padding-left:15px; margin-top:0; margin-bottom:15px;">
+                    <li>뇌진탕</li>
+                    <li>치아 1개의 결손 또는 보철을 요하는 파절</li>
+                    <li>안면부의 3cm 이상 창상(찢어짐)</li>
+                </ul>
+                <h4 style="color:#007bff; margin:0 0 5px 0;">■ 12급</h4>
+                <ul style="padding-left:15px; margin-top:0; margin-bottom:15px;">
+                    <li>척추(경추, 요추 등)의 염좌 및 긴장</li>
+                    <li>안면부의 3cm 미만 창상</li>
+                    <li>근육 또는 건의 단순 손상</li>
+                </ul>
+                <h4 style="color:#007bff; margin:0 0 5px 0;">■ 13~14급</h4>
+                <ul style="padding-left:15px; margin-top:0; margin-bottom:0;">
+                    <li>흉부/안면부/사지의 단순 타박상</li>
+                    <li>손/발가락 관절 염좌</li>
+                </ul>
+            </div>
+            <button class="back-btn" onclick="closeGradeInfo()" style="margin-top: 15px; padding: 12px; background-color: #333;">내용 확인 완료 (닫기)</button>
+        </div>
     </div>
 
     <div id="leadModal" class="modal-overlay hidden">
@@ -118,19 +184,23 @@
     </div>
 
     <script>
+        // 상단 체크박스 이벤트 핸들러 수정
         document.getElementById('vipCheck').addEventListener('change', function() {
             const isVip = this.checked;
             document.getElementById('mainForm').classList.toggle('hidden', isVip);
-            document.getElementById('premiumCta').classList.add('hidden'); // 기존 CTA는 숨김
-            document.getElementById('premiumLeadForm').classList.toggle('hidden', !isVip); // [솔루션] 중상해 상담 퍼널을 보여줌
+            document.getElementById('premiumLeadForm').classList.toggle('hidden', !isVip);
+            document.getElementById('premiumCta').classList.add('hidden'); // 전화 안내는 신청 후에만 노출
         });
 
         function goBack() {
             document.getElementById('vipCheck').checked = false;
             document.getElementById('mainForm').classList.remove('hidden');
+            document.getElementById('premiumLeadForm').classList.add('hidden');
             document.getElementById('premiumCta').classList.add('hidden');
-            document.getElementById('premiumLeadForm').classList.add('hidden'); // [솔루션] 이전으로 돌아가기
         }
+
+        function openGradeInfo() { document.getElementById('gradeInfoModal').classList.remove('hidden'); }
+        function closeGradeInfo() { document.getElementById('gradeInfoModal').classList.add('hidden'); }
 
         function selectIncomeOption(o){ document.getElementById('incomeInputDirect').disabled=(o==='fixed'); }
         function formatNumber(v){ return v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
@@ -148,40 +218,30 @@
             const insCost = parseInt(removeCommas(document.getElementById('insuranceCost').value))||0;
             const directPay = parseInt(removeCommas(document.getElementById('directPayment').value))||0;
             
-            // 🌟 2026년 상반기 자동차보험 도시일용임금 업데이트 (3,284,525원)
             let income = document.getElementById('incomeInputDirect').disabled ? 3284525 : (parseInt(removeCommas(document.getElementById('incomeInputDirect').value))||0);
-
             const age = new Date().getFullYear() - new Date(birth).getFullYear();
             
-            // 🌟 상해급수에 따른 위자료 산정 로직 업데이트 (10~11급 통합)
             let 위자료 = (grade==8) ? 300000 : (grade==9) ? 250000 : (grade==11) ? 200000 : 150000;
-            
             let 휴업손해 = Math.floor((income/30)*hDays*0.85);
             let tDays = parseInt(document.getElementById('treatmentDays').value)||0;
-            
-            // 🌟 2024년 통계자료 '외래 입내원일당 진료비' 기준 계수
             let unitCost = (age < 10 ? 54907 : age < 20 ? 73883 : age < 30 ? 87444 : age < 40 ? 81114 : age < 50 ? 78144 : age < 60 ? 71033 : age < 70 ? 64771 : 56232);
             let 향후치료비 = unitCost * tDays;
-            
             let 기타손해 = 8000 * cDays;
             let 과실상계 = (위자료 + 휴업손해 + 기타손해 + 향후치료비 + directPay) * (1 - fault / 100);
             let 치료비상계 = -Math.abs(insCost * (fault / 100));
             let total = Math.floor(과실상계 + 치료비상계);
 
             detailedResultHTML = `총 예상 합의금액: ${Math.floor(total * 0.8).toLocaleString()}원 ~ ${total.toLocaleString()}원|BR|` +
-            `위자료: ${formatNumber(위자료)}원|BR|` +
-            `휴업손해: ${formatNumber(휴업손해)}원|BR|` +
-            `향후치료비: ${formatNumber(향후치료비)}원|BR|` +
-            `기타손해: ${formatNumber(기타손해)}원|BR|` +
-            `과실상계: ${formatNumber(Math.floor(과실상계))}원|BR|` +
-            `치료비상계: ${formatNumber(Math.floor(치료비상계))}원`;
+            `위자료: ${formatNumber(위자료)}원|BR|` + `휴업손해: ${formatNumber(휴업손해)}원|BR|` +
+            `향후치료비: ${formatNumber(향후치료비)}원|BR|` + `기타손해: ${formatNumber(기타손해)}원|BR|` +
+            `과실상계: ${formatNumber(Math.floor(과실상계))}원|BR|` + `치료비상계: ${formatNumber(Math.floor(치료비상계))}원`;
             
             return true;
         }
 
         function runCalcAndShowModal() { if(calculate()) document.getElementById('leadModal').classList.remove('hidden'); }
 
-        // 🌟 [솔루션] 중상해/사망 사고 전용 DB 저장 함수
+        // 무료 프리미엄 상담 신청 로직
         function submitPremiumLead() {
             const name = document.getElementById('majorName').value;
             const phone = document.getElementById('majorPhone').value;
@@ -190,25 +250,22 @@
             const btn = document.getElementById('submitPremiumLeadBtn');
             btn.innerText = "상담 신청 중..."; btn.disabled = true;
 
-            // 기존 submitLead 함수를 재활용하여 DB에 저장 (이메일은 Major Case로 고정)
             submitLeadToGAS({
-                'name': name,
-                'phone': phone,
-                'email': 'VIP_MajorCase_Evaluation@chaeum.com', // 중상해 마커용 가짜 이메일
+                'name': name, 'phone': phone,
+                'email': 'VIP_Premium_Request@chaeum.com',
                 'accidentDate': document.getElementById('majorAccidentDate').value,
                 'accidentType': document.getElementById('majorAccidentType').value,
-                'injuryGrade': "VIP (Major Case 1~7/Death - Complex evaluation target)", // 정밀 평가 대상 마커
-                'result': "✅ Major damage evaluation target - DB entry only, call immediately." // 최종 결과 메시지
+                'injuryGrade': "VIP (무료 프리미엄 상담 신청)",
+                'result': "✅ 중상해 정밀 평가 대상 - 즉시 전화 상담 권장"
             });
 
-            // DB 저장 성공 후 퍼널 이동
             setTimeout(() => {
                 document.getElementById('premiumLeadForm').classList.add('hidden');
-                document.getElementById('premiumCta').classList.remove('hidden'); // [솔루션] DB 저장 성공 후 최종 CTA(전화버튼)를 보여줌
+                document.getElementById('premiumCta').classList.remove('hidden');
             }, 1200); 
         }
 
-        // 기존 submitLead 함수를 분리하여 재활용 가능하게 만듦
+        // 기존 일반 합의금 리포트 신청 로직
         function submitLead() {
             const name = document.getElementById('userName').value;
             const phone = document.getElementById('userPhone').value;
@@ -237,23 +294,14 @@
             setTimeout(() => { alert('입력하신 이메일로 리포트를 발송하였습니다.'); location.reload(); }, 1200); 
         }
 
-        // 실제 GAS로 데이터를 전송하는 로직 (중상해/경상 통합)
+        // 공통 데이터 전송 함수
         function submitLeadToGAS(data) {
             const scriptURL = "https://script.google.com/macros/s/AKfycbyJcaVYjXrhQdgZqI6uRAJVcPQ-a41IVza6f-nJvFhm20dNm7okqn8KkJ7YKgiNL85k/exec";
-            
             let iframe = document.createElement('iframe');
             iframe.name = 'hidden_iframe'; iframe.style.display = 'none'; document.body.appendChild(iframe);
             const form = document.createElement('form');
             form.method = 'POST'; form.action = scriptURL; form.target = 'hidden_iframe';
-            
-            // 데이터를 form input으로 변환 (기본값 세팅)
-            const finalData = {
-                'birthdate': '', 'hospitalDays': '0', 'clinicDays': '0', 'userFault': '0',
-                'income': '도시일용임금', 'insuranceCost': '0', 'directPayment': '0', 'treatmentDays': '2',
-                ...data // 입력된 데이터로 덮어쓰기
-            };
-
-            for(let k in finalData){ let i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=finalData[k]; form.appendChild(i); }
+            for(let k in data){ let i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=data[k]; form.appendChild(i); }
             document.body.appendChild(form); form.submit();
         }
     </script>
