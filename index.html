@@ -24,7 +24,6 @@
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: #fff; padding: 25px; border-radius: 10px; width: 95%; max-width: 420px; text-align: center; max-height: 95vh; overflow-y: auto; }
         
-        /* 노란색 버튼 중앙 정렬 및 디자인 */
         .submit-btn { background-color: #ffe812; color: #3c1e1e; border: none; padding: 15px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; text-align: center; display: block; }
         
         #premiumCta { background-color: #fdf2f2; border: 1px solid #ff4d4d; padding: 25px; border-radius: 10px; text-align: center; margin-top: 20px; }
@@ -192,11 +191,26 @@
             document.getElementById('premiumCta').classList.add('hidden');
         });
 
+        // [핵심 수정] 이전 화면으로 돌아올 때 버튼 텍스트와 비활성화 상태를 초기화합니다.
         function goBack() {
             document.getElementById('vipCheck').checked = false;
             document.getElementById('mainForm').classList.remove('hidden');
             document.getElementById('premiumLeadForm').classList.add('hidden');
             document.getElementById('premiumCta').classList.add('hidden');
+
+            // 1. 프리미엄 상담 신청 버튼 리셋
+            const pBtn = document.getElementById('submitPremiumLeadBtn');
+            pBtn.innerText = "무료 프리미엄 보상상담 신청접수";
+            pBtn.disabled = false;
+
+            // 2. 일반 리포트 발송 버튼 리셋 (혹시 모르니 같이 처리)
+            const fBtn = document.getElementById('finalSubmitBtn');
+            fBtn.innerText = "상세 리포트 무료로 받기";
+            fBtn.disabled = false;
+
+            // 3. 프리미엄 상담 폼 입력값 초기화 (사용자 편의)
+            document.getElementById('majorName').value = "";
+            document.getElementById('majorPhone').value = "";
         }
 
         function openGradeInfo() { document.getElementById('gradeInfoModal').classList.remove('hidden'); }
@@ -218,6 +232,7 @@
             const insCost = parseInt(removeCommas(document.getElementById('insuranceCost').value))||0;
             const directPay = parseInt(removeCommas(document.getElementById('directPayment').value))||0;
             
+            // 2026년 기준 상반기 도시일용임금 반영
             let income = document.getElementById('incomeInputDirect').disabled ? 3284525 : (parseInt(removeCommas(document.getElementById('incomeInputDirect').value))||0);
             const age = new Date().getFullYear() - new Date(birth).getFullYear();
             
