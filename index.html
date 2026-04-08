@@ -28,11 +28,6 @@
         .call-btn { background-color: #d9534f; color: white; border: none; padding: 15px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-bottom: 12px; }
         .back-btn { background-color: #666; color: white; border: none; padding: 10px; width: 100%; font-size: 14px; border-radius: 5px; cursor: pointer; }
         .privacy-detail { text-align: left; background: #f8f9fa; border: 1px solid #ddd; padding: 12px; font-size: 12px; color: #555; border-radius: 5px; margin-top: 10px; line-height: 1.5; }
-        
-        /* 🌟 새로 추가된 급수 안내 팝업 리스트 스타일 */
-        .grade-list { text-align: left; font-size: 14px; padding-left: 0; list-style: none; margin-top: 15px; }
-        .grade-list li { background: #f1f3f5; margin-bottom: 8px; padding: 10px; border-radius: 5px; border-left: 4px solid #007bff; }
-        .grade-list li b { color: #007bff; }
     </style>
 </head>
 <body>
@@ -97,17 +92,70 @@
     </div>
 
     <div id="gradeInfoModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <h3 style="margin-top:0;">자동차보험 상해급수표 🏥</h3>
-            <p style="font-size:13px; color:#666; text-align:left;">병원에서 받으신 <b>진단명</b>을 기준으로 대략적인 본인의 상해급수를 확인해 보세요.</p>
-            <ul class="grade-list">
-                <li><b>8급:</b> 쇄골/늑골/발목 등 골절, 추간판탈출증(수술)</li>
-                <li><b>9급:</b> 코뼈 등 안면부 단순 골절, 추간판탈출증(비수술)</li>
-                <li><b>10~11급:</b> 뇌진탕, 치아 파절, 수지/족지(손발가락) 뼈 절단 및 골절</li>
-                <li><b>12~14급:</b> 단순 염좌(목/허리 삐끗), 타박상, 찰과상</li>
-            </ul>
-            <p style="font-size:12px; color:#d9534f; text-align:left; margin-top:10px;">* 여러 부위를 다치신 경우 병합되어 급수가 높아질 수 있습니다. 정확한 급수는 담당자나 보상 전문가에게 문의하세요.</p>
-            <button class="back-btn" onclick="closeGradeInfo()" style="margin-top: 15px;">확인 완료 (닫기)</button>
+        <div class="modal-content" style="max-width: 450px; padding: 20px;">
+            <h3 style="margin-top:0; color:#333;">자동차보험 상해구분표 🏥</h3>
+            <p style="font-size:12px; color:#666; text-align:left; margin-bottom:10px;">
+                * 자배법 시행령 [별표1] 기준 (8급~14급 발췌)<br>
+                * 1~7급(중상해)은 전문가의 정밀 평가가 필요합니다.
+            </p>
+            
+            <div style="max-height: 40vh; overflow-y: auto; text-align: left; font-size: 13px; background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #ddd; line-height: 1.6;">
+                
+                <h4 style="color:#007bff; margin:0 0 5px 0;">■ 8급</h4>
+                <ul style="padding-left:15px; margin-top:0; margin-bottom:15px;">
+                    <li>추간판탈출증(디스크) 등 척주 손상으로 수술을 시행한 상해</li>
+                    <li>쇄골, 흉골, 늑골, 골반골의 다발성/복잡 골절</li>
+                    <li>무릎 십자인대, 반월상 연골의 부분 파열</li>
+                    <li>아킬레스건 부분 파열</li>
+                </ul>
+
+                <h4 style="color:#007bff; margin:0 0 5px 0;">■ 9급</h4>
+                <ul style="padding-left:15px; margin-top:0; margin-bottom:15px;">
+                    <li>추간판탈출증 (수술하지 않은 경우)</li>
+                    <li>비골(코뼈) 골절로 수술을 요하는 상해</li>
+                    <li>안면부 단순 골절, 쇄골/흉골/늑골의 단순 골절</li>
+                    <li>치아 4~5개의 결손 또는 보철을 요하는 파절</li>
+                </ul>
+
+                <h4 style="color:#007bff; margin:0 0 5px 0;">■ 10급</h4>
+                <ul style="padding-left:15px; margin-top:0; margin-bottom:15px;">
+                    <li>비골(코뼈)의 단순 골절</li>
+                    <li>치아 2~3개의 결손 또는 보철을 요하는 파절</li>
+                    <li>수지(손가락) 또는 족지(발가락)의 골절</li>
+                </ul>
+
+                <h4 style="color:#007bff; margin:0 0 5px 0;">■ 11급</h4>
+                <ul style="padding-left:15px; margin-top:0; margin-bottom:15px;">
+                    <li>뇌진탕</li>
+                    <li>치아 1개의 결손 또는 보철을 요하는 파절</li>
+                    <li>안면부의 3cm 이상 창상(찢어짐)</li>
+                </ul>
+
+                <h4 style="color:#007bff; margin:0 0 5px 0;">■ 12급 (가장 빈번한 경상 환자)</h4>
+                <ul style="padding-left:15px; margin-top:0; margin-bottom:15px;">
+                    <li>척추(경추, 요추 등)의 염좌 및 긴장 (목/허리 삐끗함)</li>
+                    <li>안면부의 3cm 미만 창상</li>
+                    <li>근육 또는 건의 단순 손상</li>
+                    <li>고막 파열</li>
+                </ul>
+
+                <h4 style="color:#007bff; margin:0 0 5px 0;">■ 13급</h4>
+                <ul style="padding-left:15px; margin-top:0; margin-bottom:15px;">
+                    <li>흉부의 단순 타박상</li>
+                    <li>안면부의 단순 타박상 및 단순 창상</li>
+                </ul>
+
+                <h4 style="color:#007bff; margin:0 0 5px 0;">■ 14급</h4>
+                <ul style="padding-left:15px; margin-top:0; margin-bottom:0;">
+                    <li>사지(팔/다리)의 단순 타박상</li>
+                    <li>수족지(손/발가락) 관절 염좌</li>
+                </ul>
+            </div>
+            
+            <p style="font-size:12px; color:#d9534f; text-align:left; margin-top:15px; font-weight:bold;">
+                ⚠️ 여러 부위를 다치신 경우 병합되어 급수가 상향될 수 있습니다. (예: 12급 상해 2개 = 11급 적용)
+            </p>
+            <button class="back-btn" onclick="closeGradeInfo()" style="margin-top: 15px; padding: 12px; background-color: #333;">내용 확인 완료 (닫기)</button>
         </div>
     </div>
 
@@ -147,7 +195,6 @@
             document.getElementById('premiumCta').classList.add('hidden');
         }
 
-        // 🌟 상해급수 안내 팝업 제어 함수
         function openGradeInfo() { document.getElementById('gradeInfoModal').classList.remove('hidden'); }
         function closeGradeInfo() { document.getElementById('gradeInfoModal').classList.add('hidden'); }
 
