@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>교통사고 예상 합의금 계산 시스템</title>
+    <title>교통사고 예상 합의금 계산기</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { margin: 0; padding: 0; overflow-x: hidden; width: 100%; }
@@ -28,11 +28,16 @@
         .call-btn { background-color: #d9534f; color: white; border: none; padding: 15px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-bottom: 12px; }
         .back-btn { background-color: #666; color: white; border: none; padding: 10px; width: 100%; font-size: 14px; border-radius: 5px; cursor: pointer; }
         .privacy-detail { text-align: left; background: #f8f9fa; border: 1px solid #ddd; padding: 12px; font-size: 12px; color: #555; border-radius: 5px; margin-top: 10px; line-height: 1.5; }
+        
+        /* 🌟 새로 추가된 급수 안내 팝업 리스트 스타일 */
+        .grade-list { text-align: left; font-size: 14px; padding-left: 0; list-style: none; margin-top: 15px; }
+        .grade-list li { background: #f1f3f5; margin-bottom: 8px; padding: 10px; border-radius: 5px; border-left: 4px solid #007bff; }
+        .grade-list li b { color: #007bff; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>교통사고 예상 합의금 계산 시스템</h2>
+        <h2>교통사고 예상 합의금 계산기</h2>
 
         <div class="vip-filter">
             <label><input type="checkbox" id="vipCheck"> 골절, 인대 파열, 또는 수술을 받으셨나요?</label>
@@ -58,10 +63,18 @@
             <select id="userFault">
                 <script>for(let i=0; i<=100; i+=5) document.write(`<option value="${i}">${i}%</option>`);</script>
             </select>
-            <label>7. 상해급수</label>
-            <select id="injuryGrade">
-                <option value="8">8급</option><option value="9">9급</option><option value="12">12~14급</option>
-            </select>
+            
+            <label>7. 상해급수 (진단서 기준)</label>
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <select id="injuryGrade" style="width: 70% !important; margin-bottom: 0;">
+                    <option value="8">8급</option>
+                    <option value="9">9급</option>
+                    <option value="11">10~11급</option>
+                    <option value="12" selected>12~14급</option>
+                </select>
+                <button type="button" onclick="openGradeInfo()" style="width: 30%; margin-top: 0; padding: 0; background-color: #6c757d; font-size: 14px; border-radius: 5px;">🔍 급수확인</button>
+            </div>
+            
             <label>8. 월 소득액(모르면 도시일용임금 선택)</label>
             <div style="font-size: 14px; margin-bottom: 10px;">
                 <label style="display:inline-block; font-weight:normal; margin-bottom:5px;"><input type="radio" name="incomeOption" onclick="selectIncomeOption('direct')"> 직접입력</label>
@@ -77,6 +90,25 @@
             <button onclick="runCalcAndShowModal()">예상 합의금 계산하기</button>
         </div>
         <div id="result" style="display:none;"></div>
+        
+        <div style="text-align: center; margin-top: 25px; font-size: 12px; color: #aaa;">
+            v1.1 (2026.04 최신 기준 반영)
+        </div>
+    </div>
+
+    <div id="gradeInfoModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 style="margin-top:0;">자동차보험 상해급수표 🏥</h3>
+            <p style="font-size:13px; color:#666; text-align:left;">병원에서 받으신 <b>진단명</b>을 기준으로 대략적인 본인의 상해급수를 확인해 보세요.</p>
+            <ul class="grade-list">
+                <li><b>8급:</b> 쇄골/늑골/발목 등 골절, 추간판탈출증(수술)</li>
+                <li><b>9급:</b> 코뼈 등 안면부 단순 골절, 추간판탈출증(비수술)</li>
+                <li><b>10~11급:</b> 뇌진탕, 치아 파절, 수지/족지(손발가락) 뼈 절단 및 골절</li>
+                <li><b>12~14급:</b> 단순 염좌(목/허리 삐끗), 타박상, 찰과상</li>
+            </ul>
+            <p style="font-size:12px; color:#d9534f; text-align:left; margin-top:10px;">* 여러 부위를 다치신 경우 병합되어 급수가 높아질 수 있습니다. 정확한 급수는 담당자나 보상 전문가에게 문의하세요.</p>
+            <button class="back-btn" onclick="closeGradeInfo()" style="margin-top: 15px;">확인 완료 (닫기)</button>
+        </div>
     </div>
 
     <div id="leadModal" class="modal-overlay hidden">
@@ -115,6 +147,10 @@
             document.getElementById('premiumCta').classList.add('hidden');
         }
 
+        // 🌟 상해급수 안내 팝업 제어 함수
+        function openGradeInfo() { document.getElementById('gradeInfoModal').classList.remove('hidden'); }
+        function closeGradeInfo() { document.getElementById('gradeInfoModal').classList.add('hidden'); }
+
         function selectIncomeOption(o){ document.getElementById('incomeInputDirect').disabled=(o==='fixed'); }
         function formatNumber(v){ return v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
         function removeCommas(v){ return v.toString().replace(/,/g, ''); }
@@ -131,15 +167,15 @@
             const insCost = parseInt(removeCommas(document.getElementById('insuranceCost').value))||0;
             const directPay = parseInt(removeCommas(document.getElementById('directPayment').value))||0;
             
-            // 🌟 2026년 상반기 자동차보험 도시일용임금 업데이트 (3,284,525원)
             let income = document.getElementById('incomeInputDirect').disabled ? 3284525 : (parseInt(removeCommas(document.getElementById('incomeInputDirect').value))||0);
 
             const age = new Date().getFullYear() - new Date(birth).getFullYear();
-            let 위자료 = (grade==8)?300000:(grade==9)?250000:150000;
+            
+            let 위자료 = (grade==8) ? 300000 : (grade==9) ? 250000 : (grade==11) ? 200000 : 150000;
+            
             let 휴업손해 = Math.floor((income/30)*hDays*0.85);
             let tDays = parseInt(document.getElementById('treatmentDays').value)||0;
             
-            // 🌟 2024년 통계자료 '외래 입내원일당 진료비' 기준 계수 업데이트
             let unitCost = (age < 10 ? 54907 : age < 20 ? 73883 : age < 30 ? 87444 : age < 40 ? 81114 : age < 50 ? 78144 : age < 60 ? 71033 : age < 70 ? 64771 : 56232);
             let 향후치료비 = unitCost * tDays;
             
