@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>교통사고 예상 합의금 계산기</title>
+    <title>🧮 교통사고 예상 손해액 계산기</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { margin: 0; padding: 0; overflow-x: hidden; width: 100%; }
@@ -36,7 +36,7 @@
 </head>
 <body>
     <div class="container">
-        <h2>교통사고 예상 합의금 계산기</h2>
+        <h2>교통사고 예상 손해액 계산기</h2>
 
         <div class="vip-filter">
             <label><input type="checkbox" id="vipCheck"> 골절, 인대파열 또는 수술을 받았거나 사망사고인가요?</label>
@@ -112,20 +112,20 @@
             <select id="treatmentDays">
                 <option value="7">1주</option><option value="14" selected>2주</option><option value="21">3주</option><option value="28">4주</option>
             </select>
-            <button onclick="runCalcAndShowModal()">예상 합의금 계산하기</button>
+            <button onclick="runCalcAndShowModal()">예상 손해액 계산하기</button>
         </div>
 
         <div style="text-align: center; margin-top: 25px; font-size: 12px; color: #aaa;">
-            v1.2 (2026.04 최신 기준 및 실무 로직 반영)
+            v1.3 (2026.04 최신 기준 및 실무 로직 반영, 용어 정비)
         </div>
 
         <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 5px; font-size: 11px; color: #6c757d; line-height: 1.6; word-break: keep-all;">
             <b>[법적 책임 한계 및 면책 공고]</b><br>
-            본 계산기가 산출한 예상 합의금액은 입력하신 기초 정보와 일반적인 자동차보험 약관 기준을 바탕으로 한 <b>'참고용 추정치'</b>이며, 실제 최종 합의 금액이나 법적 판단을 보장하지 않습니다. <br>
-            더채움 손해사정·행정사사무소는 관련 법령(<b>변호사법 및 보험업법 등</b>)을 엄격히 준수하며, 피해자의 정당한 권리 보호를 위한 객관적인 손해액 사정 업무만을 수행합니다. <b>보험사와의 직접적인 합의 절차 대행, 합의금 절충 및 법률 대리 행위는 일절 수행하지 않으며</b>, 최종 합의의 주체 및 법적 책임은 철저히 의뢰인 본인에게 있음을 명시합니다.<br><br>
+            본 계산기가 산출한 <b>예상 손해액</b>은 입력하신 기초 정보와 일반적인 자동차보험 약관 기준을 바탕으로 한 <b>'참고용 추정치'</b>이며, 실제 최종 보상 금액이나 법적 판단을 보장하지 않습니다. <br>
+            더채움 손해사정·행정사사무소는 관련 법령(<b>변호사법 및 보험업법 등</b>)을 엄격히 준수하며, 피해자의 정당한 권리 보호를 위한 객관적인 손해액 사정 업무만을 수행합니다. <b>보험사와의 직접적인 합의 절차 대행, 손해액 절충 및 법률 대리 행위는 일절 수행하지 않으며</b>, 최종 합의의 주체 및 법적 책임은 철저히 의뢰인 본인에게 있음을 명시합니다.<br><br>
             
             <b>[저작권 안내]</b><br>
-            본 예상 합의금 계산기 시스템의 기획, 산출 로직, UI/UX 및 관련된 모든 지식재산권은 <b>더채움 손해사정·행정사사무소</b>에 독점적으로 귀속됩니다. 사전 서면 동의 없는 무단 복제, 배포, 2차 가공 및 상업적 도용 시 관련 법령에 따라 민형사상의 책임을 질 수 있습니다.<br>
+            본 예상 손해액 계산기 시스템의 기획, 산출 로직, UI/UX 및 관련된 모든 지식재산권은 <b>더채움 손해사정·행정사사무소</b>에 독점적으로 귀속됩니다. 사전 서면 동의 없는 무단 복제, 배포, 2차 가공 및 상업적 도용 시 관련 법령에 따라 민형사상의 책임을 질 수 있습니다.<br>
             <b>Copyright ⓒ 2026 더채움 손해사정·행정사사무소. All rights reserved.</b>
         </div>
     </div>
@@ -195,7 +195,7 @@
             <div class="privacy-detail">
                 <b>[개인정보 수집 및 이용안내]</b><br>
                 1. 수집항목: 성함, 연락처, 이메일, 사고 정보<br>
-                2. 목적: 합의금 리포트 전송 및 보상 상담<br>
+                2. 목적: 손해액 리포트 전송 및 보상 상담<br>
                 3. 기간: <b>6개월 (이후 즉시 파기)</b>
             </div>
             <button id="finalSubmitBtn" class="submit-btn" onclick="submitLead()">상세 리포트 무료로 받기</button>
@@ -333,8 +333,8 @@
             let total = Math.floor(과실상계 + 치료비상계);
 
             detailedResultHTML = wageNotice +
-            // [핵심 변경] "총 예상 합의금액" 텍스트 전체를 태그 안으로 포함시킴
-            `<b style="color: blue;">총 예상 합의금액: ${Math.floor(total * 0.8).toLocaleString()}원 ~ ${total.toLocaleString()}원</b>|BR|` +
+            // [수정됨] 이메일 발송 리포트 내 텍스트 변경 (합의금 -> 손해액)
+            `<b style="color: blue;">총 예상 손해액: ${Math.floor(total * 0.8).toLocaleString()}원 ~ ${total.toLocaleString()}원</b>|BR|` +
             `위자료: ${formatNumber(위자료)}원|BR|` + `휴업손해: ${formatNumber(휴업손해)}원|BR|` +
             `향후치료비: ${formatNumber(향후치료비)}원|BR|` + `기타손해: ${formatNumber(기타손해)}원|BR|` +
             `과실상계: ${formatNumber(Math.floor(과실상계))}원|BR|` + `치료비상계: ${formatNumber(Math.floor(치료비상계))}원`;
