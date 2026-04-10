@@ -30,6 +30,8 @@
         .call-btn { background-color: #d9534f; color: white; border: none; padding: 15px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-bottom: 12px; }
         .back-btn { background-color: #666; color: white; border: none; padding: 10px; width: 100%; font-size: 14px; border-radius: 5px; cursor: pointer; }
         .privacy-detail { text-align: left; background: #f8f9fa; border: 1px solid #ddd; padding: 12px; font-size: 12px; color: #555; border-radius: 5px; margin-top: 10px; line-height: 1.5; }
+        
+        .krw-hint { font-size: 13px; color: #007bff; margin-top: -5px; margin-bottom: 10px; height: 18px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -94,10 +96,18 @@
             <div style="font-size: 14px; margin-bottom: 10px;">
                 <label style="display:inline-block; font-weight:normal; margin-bottom:5px;"><input type="radio" name="incomeOption" onclick="selectIncomeOption('direct')"> 직접입력</label>
                 <label style="display:inline-block; font-weight:normal; margin-left:10px; margin-bottom:5px;"><input type="radio" name="incomeOption" onclick="selectIncomeOption('fixed')" checked> 도시일용임금</label>
-                <input type="text" id="incomeInputDirect" placeholder="원 단위(세후 금액으로 입력)" disabled style="margin-top:5px;">
+                <input type="text" id="incomeInputDirect" placeholder="원 단위(세후 금액으로 입력)" disabled style="margin-top:5px; margin-bottom: 5px;">
+                <div id="incomeHint" class="krw-hint"></div>
             </div>
-            <label>9. 보험사 부담 치료비</label><input type="text" id="insuranceCost" placeholder="원 단위 (모르면 생략)">
-            <label>10. 직불치료비</label><input type="text" id="directPayment" placeholder="원 단위(모르거나 없으면 생략)">
+            
+            <label>9. 보험사 부담 치료비</label>
+            <input type="text" id="insuranceCost" placeholder="원 단위 (모르면 생략)" style="margin-bottom: 5px;">
+            <div id="insuranceHint" class="krw-hint"></div>
+            
+            <label>10. 직불치료비</label>
+            <input type="text" id="directPayment" placeholder="원 단위(모르거나 없으면 생략)" style="margin-bottom: 5px;">
+            <div id="directHint" class="krw-hint"></div>
+
             <label>11. 향후치료일수(척추 관련 진단시만 3주로 선택)</label>
             <select id="treatmentDays">
                 <option value="7">1주</option><option value="14" selected>2주</option><option value="21">3주</option><option value="28">4주</option>
@@ -106,7 +116,7 @@
         </div>
 
         <div style="text-align: center; margin-top: 25px; font-size: 12px; color: #aaa;">
-            v1.1 (2026.04 최신 기준 반영)
+            v1.2 (2026.04 최신 기준 및 실무 로직 반영)
         </div>
 
         <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 5px; font-size: 11px; color: #6c757d; line-height: 1.6; word-break: keep-all;">
@@ -201,24 +211,20 @@
             document.getElementById('premiumCta').classList.add('hidden');
         });
 
-        // [핵심 수정] 이전 화면으로 돌아올 때 버튼 텍스트와 비활성화 상태를 초기화합니다.
         function goBack() {
             document.getElementById('vipCheck').checked = false;
             document.getElementById('mainForm').classList.remove('hidden');
             document.getElementById('premiumLeadForm').classList.add('hidden');
             document.getElementById('premiumCta').classList.add('hidden');
 
-            // 1. 프리미엄 상담 신청 버튼 리셋
             const pBtn = document.getElementById('submitPremiumLeadBtn');
             pBtn.innerText = "무료 프리미엄 보상상담 신청접수";
             pBtn.disabled = false;
 
-            // 2. 일반 리포트 발송 버튼 리셋 (혹시 모르니 같이 처리)
             const fBtn = document.getElementById('finalSubmitBtn');
             fBtn.innerText = "상세 리포트 무료로 받기";
             fBtn.disabled = false;
 
-            // 3. 프리미엄 상담 폼 입력값 초기화 (사용자 편의)
             document.getElementById('majorName').value = "";
             document.getElementById('majorPhone').value = "";
         }
@@ -226,9 +232,65 @@
         function openGradeInfo() { document.getElementById('gradeInfoModal').classList.remove('hidden'); }
         function closeGradeInfo() { document.getElementById('gradeInfoModal').classList.add('hidden'); }
 
-        function selectIncomeOption(o){ document.getElementById('incomeInputDirect').disabled=(o==='fixed'); }
+        function selectIncomeOption(o){ 
+            const directInput = document.getElementById('incomeInputDirect');
+            const hint = document.getElementById('incomeHint');
+            directInput.disabled = (o === 'fixed'); 
+            if(o === 'fixed') {
+                directInput.value = '';
+                hint.innerText = '';
+            }
+        }
+        
         function formatNumber(v){ return v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
         function removeCommas(v){ return v.toString().replace(/,/g, ''); }
+
+        function numberToKorean(number) {
+            if (!number || number == 0) return '';
+            const unitWords = ['', '만 ', '억 ', '조 '];
+            const splitUnit = 10000;
+            let splitCount = unitWords.length;
+            let resultArray = [];
+            let resultString = '';
+
+            let num = parseInt(number, 10);
+
+            for (let i = 0; i < splitCount; i++) {
+                let unitResult = (num % Math.pow(splitUnit, i + 1)) / Math.pow(splitUnit, i);
+                unitResult = Math.floor(unitResult);
+                if (unitResult > 0) resultArray[i] = unitResult;
+                num = num - (unitResult * Math.pow(splitUnit, i));
+            }
+
+            for (let i = 0; i < resultArray.length; i++) {
+                if (!resultArray[i]) continue;
+                resultString = formatNumber(resultArray[i]) + unitWords[i] + resultString;
+            }
+            return resultString.trim() + ' 원';
+        }
+
+        function setupCurrencyInput(inputId, hintId) {
+            const inputEl = document.getElementById(inputId);
+            const hintEl = document.getElementById(hintId);
+            
+            inputEl.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                
+                if(value) {
+                    e.target.value = formatNumber(value);
+                    hintEl.innerText = numberToKorean(value);
+                } else {
+                    e.target.value = '';
+                    hintEl.innerText = '';
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            setupCurrencyInput('incomeInputDirect', 'incomeHint');
+            setupCurrencyInput('insuranceCost', 'insuranceHint');
+            setupCurrencyInput('directPayment', 'directHint');
+        });
 
         let detailedResultHTML = ''; 
 
@@ -242,8 +304,22 @@
             const insCost = parseInt(removeCommas(document.getElementById('insuranceCost').value))||0;
             const directPay = parseInt(removeCommas(document.getElementById('directPayment').value))||0;
             
-            // 2026년 기준 상반기 도시일용임금 반영
-            let income = document.getElementById('incomeInputDirect').disabled ? 3284525 : (parseInt(removeCommas(document.getElementById('incomeInputDirect').value))||0);
+            const urbanWage = 3284525; // 2026년 상반기 기준 도시일용임금
+            let isDirect = !document.getElementById('incomeInputDirect').disabled;
+            let inputIncome = parseInt(removeCommas(document.getElementById('incomeInputDirect').value)) || 0;
+            
+            let income = urbanWage; // 소득 기본값 세팅
+            let wageNotice = ""; // 결과 출력용 문구 변수
+
+            if (isDirect) {
+                if (inputIncome < urbanWage) {
+                    income = urbanWage; 
+                    wageNotice = `※ 입력하신 소득이 도시일용임금보다 적어, 실무 기준에 따라 피해자에게 유리한 도시일용임금(2026년 상반기 기준 월 ${formatNumber(urbanWage)}원)으로 자동 상향 적용되었습니다.|BR||BR|`;
+                } else {
+                    income = inputIncome;
+                }
+            }
+
             const age = new Date().getFullYear() - new Date(birth).getFullYear();
             
             let 위자료 = (grade==8) ? 300000 : (grade==9) ? 250000 : (grade==11) ? 200000 : 150000;
@@ -256,7 +332,9 @@
             let 치료비상계 = -Math.abs(insCost * (fault / 100));
             let total = Math.floor(과실상계 + 치료비상계);
 
-            detailedResultHTML = `총 예상 합의금액: ${Math.floor(total * 0.8).toLocaleString()}원 ~ ${total.toLocaleString()}원|BR|` +
+            detailedResultHTML = wageNotice +
+            // [핵심 변경] "총 예상 합의금액" 텍스트 전체를 태그 안으로 포함시킴
+            `<b style="color: blue;">총 예상 합의금액: ${Math.floor(total * 0.8).toLocaleString()}원 ~ ${total.toLocaleString()}원</b>|BR|` +
             `위자료: ${formatNumber(위자료)}원|BR|` + `휴업손해: ${formatNumber(휴업손해)}원|BR|` +
             `향후치료비: ${formatNumber(향후치료비)}원|BR|` + `기타손해: ${formatNumber(기타손해)}원|BR|` +
             `과실상계: ${formatNumber(Math.floor(과실상계))}원|BR|` + `치료비상계: ${formatNumber(Math.floor(치료비상계))}원`;
