@@ -14,7 +14,7 @@
         input[type="date"], input[type="number"], input[type="text"], input[type="email"], input[type="tel"], select { 
             display: block; width: 100% !important; height: 50px; padding: 0 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; background-color: #fff; color: #333; -webkit-appearance: none; appearance: none;
         }
-        select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px; padding-right: 40px; }
+        select { background-image: url("data:image/svg+xml;cconst urbanWage = 3347937; // 2026년 중반기 기준 도시일용임금harset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px; padding-right: 40px; }
         
         .vip-filter { background-color: #fff3f3; border: 2px solid #ff4d4d; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
         .vip-filter label { color: #d9534f; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; margin: 0;}
@@ -304,7 +304,7 @@
             const insCost = parseInt(removeCommas(document.getElementById('insuranceCost').value))||0;
             const directPay = parseInt(removeCommas(document.getElementById('directPayment').value))||0;
             
-            const urbanWage = 3284525; // 2026년 상반기 기준 도시일용임금
+            const urbanWage = 3347937; // 2026년 중반기 기준 도시일용임금
             let isDirect = !document.getElementById('incomeInputDirect').disabled;
             let inputIncome = parseInt(removeCommas(document.getElementById('incomeInputDirect').value)) || 0;
             
@@ -314,7 +314,7 @@
             if (isDirect) {
                 if (inputIncome < urbanWage) {
                     income = urbanWage; 
-                    wageNotice = `※ 입력하신 소득이 도시일용임금보다 적어, 실무 기준에 따라 피해자에게 유리한 도시일용임금(2026년 상반기 기준 월 ${formatNumber(urbanWage)}원)으로 자동 상향 적용되었습니다.|BR||BR|`;
+                    wageNotice = `※ 입력하신 소득이 도시일용임금보다 적어, 실무 기준에 따라 피해자에게 유리한 도시일용임금(2026년 중반기 기준 월 ${formatNumber(urbanWage)}원)으로 자동 상향 적용되었습니다.|BR||BR|`;
                 } else {
                     income = inputIncome;
                 }
@@ -325,7 +325,7 @@
             let 위자료 = (grade==8) ? 300000 : (grade==9) ? 250000 : (grade==11) ? 200000 : 150000;
             let 휴업손해 = Math.floor((income/30)*hDays*0.85);
             let tDays = parseInt(document.getElementById('treatmentDays').value)||0;
-            let unitCost = (age < 10 ? 54907 : age < 20 ? 73883 : age < 30 ? 87444 : age < 40 ? 81114 : age < 50 ? 78144 : age < 60 ? 71033 : age < 70 ? 64771 : 56232);
+            let unitCost = (age < 10 ? 55389 : age < 20 ? 76101 : age < 30 ? 90456 : age < 40 ? 88358 : age < 50 ? 82245 : age < 60 ? 74998 : age < 70 ? 68699 : 59681);
             let 향후치료비 = unitCost * tDays;
             let 기타손해 = 8000 * cDays;
             let 과실상계 = (위자료 + 휴업손해 + 기타손해 + 향후치료비 + directPay) * (1 - fault / 100);
