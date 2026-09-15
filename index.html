@@ -329,10 +329,12 @@
             let 향후치료비 = unitCost * tDays;
             let fssNotice = ""; // 금감원 안내문구 변수
 
-            // 🌟 12~14급(value="12")인 경우 향후치료비 0원 처리 및 안내문구 추가
-            if (grade == 12) {
+            let accDateInput = document.getElementById('accidentDate').value; // 입력된 사고일자 가져오기
+
+            // 🌟 12~14급(value="12")이면서 사고일자가 '2026년 9월 10일' 이후(당일 포함)인 경우에만 0원 처리
+            if (grade == 12 && accDateInput >= "2026-09-10") {
                 향후치료비 = 0;
-                fssNotice = `※ [최신 규제 반영] 26년 9월 금감원 지침에 따라 12~14급 경상환자의 향후치료비는 산정에서 제외(0원)되었습니다.|BR||BR|`;
+                fssNotice = `※ [최신 규제 반영] 26년 9월 10일 이후 사고 건으로, 금감원 지침에 따라 12~14급 경상환자의 향후치료비는 산정에서 제외(0원)되었습니다.|BR||BR|`;
             }
 
             let 기타손해 = 8000 * cDays;
