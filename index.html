@@ -327,12 +327,20 @@
             let tDays = parseInt(document.getElementById('treatmentDays').value)||0;
             let unitCost = (age < 10 ? 55389 : age < 20 ? 76101 : age < 30 ? 90456 : age < 40 ? 88358 : age < 50 ? 82245 : age < 60 ? 74998 : age < 70 ? 68699 : 59681);
             let 향후치료비 = unitCost * tDays;
+            let fssNotice = ""; // 금감원 안내문구 변수
+
+            // 🌟 12~14급(value="12")인 경우 향후치료비 0원 처리 및 안내문구 추가
+            if (grade == 12) {
+                향후치료비 = 0;
+                fssNotice = `※ [최신 규제 반영] 26년 9월 금감원 지침에 따라 12~14급 경상환자의 향후치료비는 산정에서 제외(0원)되었습니다.|BR||BR|`;
+            }
+
             let 기타손해 = 8000 * cDays;
             let 과실상계 = (위자료 + 휴업손해 + 기타손해 + 향후치료비 + directPay) * (1 - fault / 100);
             let 치료비상계 = -Math.abs(insCost * (fault / 100));
             let total = Math.floor(과실상계 + 치료비상계);
 
-            detailedResultHTML = wageNotice +
+            detailedResultHTML = wageNotice + fssNotice +
             // [수정됨] 이메일 발송 리포트 내 텍스트 변경 (합의금 -> 손해액)
             `<b style="color: blue;">총 예상 손해액: ${Math.floor(total * 0.8).toLocaleString()}원 ~ ${total.toLocaleString()}원</b>|BR|` +
             `위자료: ${formatNumber(위자료)}원|BR|` + `휴업손해: ${formatNumber(휴업손해)}원|BR|` +
