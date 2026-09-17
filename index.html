@@ -36,7 +36,7 @@
 </head>
 <body>
     <div class="container">
-        <h2>🧮 교통사고 예상 손해액 계산기</h2>
+        <h2 onclick="activateAdminMode()" style="cursor: pointer;">🧮 교통사고 예상 손해액 계산기</h2>
 
         <div class="vip-filter">
             <label><input type="checkbox" id="vipCheck"> 골절, 인대파열 또는 수술을 받았거나 사망사고인가요?</label>
@@ -112,7 +112,10 @@
             <select id="treatmentDays">
                 <option value="7">1주</option><option value="14" selected>2주</option><option value="21">3주</option><option value="28">4주</option>
             </select>
-            <button onclick="runCalcAndShowModal()">예상 손해액 계산하기</button>
+            <button id="calcBtn" onclick="runCalcAndShowModal()">예상 손해액 계산하기</button>
+            
+            <!-- 관리자 모드 전용 결과 출력창 (평소엔 숨김) -->
+            <div id="adminResultDiv" class="hidden" style="margin-top: 15px; padding: 15px; background-color: #e9f7ef; border: 2px solid #28a745; border-radius: 5px; font-size: 15px; line-height: 1.6; color: #333;"></div>
         </div>
 
         <div style="text-align: center; margin-top: 25px; font-size: 12px; color: #aaa;">
@@ -352,7 +355,41 @@
             return true;
         }
 
-        function runCalcAndShowModal() { if(calculate()) document.getElementById('leadModal').classList.remove('hidden'); }
+        // 🌟 비밀 관리자 모드 로직
+        let adminClickCount = 0;
+        let isAdminMode = false;
+        let adminTimer;
+
+        function activateAdminMode() {
+            adminClickCount++;
+            clearTimeout(adminTimer);
+            adminTimer = setTimeout(() => { adminClickCount = 0; }, 2000); // 2초 내에 연속 5번 클릭해야 발동
+            
+            if (adminClickCount >= 5 && !isAdminMode) {
+                isAdminMode = true;
+                alert("🛠️ [관리자 모드 활성화]\n대표님, 이제 이메일 입력 없이 화면에서 결과를 즉시 확인합니다.");
+                
+                const btn = document.getElementById('calcBtn');
+                btn.innerText = "예상 손해액 즉시 확인 (관리자 모드)";
+                btn.style.backgroundColor = "#28a745"; // 초록색으로 변경
+            }
+        }
+
+        // 계산 버튼 클릭 시 동작 분기
+        function runCalcAndShowModal() { 
+            if(calculate()) {
+                if(isAdminMode) {
+                    // 관리자 모드일 경우: 팝업 띄우지 않고 곧바로 화면에 출력
+                    const resultBox = document.getElementById('adminResultDiv');
+                    // |BR| 텍스트를 실제 줄바꿈 태그로 변환하여 출력
+                    resultBox.innerHTML = detailedResultHTML.replace(/\|BR\|/g, '<br>');
+                    resultBox.classList.remove('hidden');
+                } else {
+                    // 일반 모드일 경우: 기존처럼 리드 수집 팝업 띄우기
+                    document.getElementById('leadModal').classList.remove('hidden'); 
+                }
+            }
+        }
 
         function submitPremiumLead() {
             const name = document.getElementById('majorName').value;
